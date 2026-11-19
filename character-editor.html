@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🐻 Sprattelbjörn – Verkstad</title>
+    <style>
+      :root {
+        --paper-bg: #fdf8ee;
+        --paper-card: #fffdf7;
+        --pencil-dark: #2c2724;
+        --pencil-mid: #5a524c;
+        --accent-yellow: #ffd166;
+        --accent-green: #06d6a0;
+        --accent-blue: #4cc9f0;
+        --accent-pink: #ff758f;
+        --accent-orange: #ff9f1c;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+        background: var(--paper-bg);
+        font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", "Trebuchet MS", cursive, sans-serif;
+        color: var(--pencil-dark);
+      }
+      body {
+        display: flex;
+        min-height: 100vh;
+        padding: 14px;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .paper-box {
+        background: var(--paper-card);
+        border: 3.5px solid var(--pencil-dark);
+        border-radius: 24px 12px 26px 14px / 14px 26px 12px 24px;
+        box-shadow:
+          0 0 0 4px #ffffff,
+          5px 6px 0 rgba(44, 39, 36, 0.24);
+      }
+      .crayon-btn {
+        background: var(--paper-card);
+        border: 3.5px solid var(--pencil-dark);
+        border-radius: 22px 14px 24px 12px / 12px 24px 14px 22px;
+        box-shadow:
+          0 0 0 3px #ffffff,
+          4px 5px 0 rgba(44, 39, 36, 0.28);
+        cursor: pointer;
+        padding: 8px 14px;
+        font-family: inherit;
+        font-weight: 800;
+        color: var(--pencil-dark);
+        transition:
+          transform 0.08s ease,
+          box-shadow 0.08s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .crayon-btn:active {
+        transform: translate(3px, 4px) scale(0.97);
+        box-shadow:
+          0 0 0 3px #ffffff,
+          1px 1px 0 rgba(44, 39, 36, 0.28);
+      }
+      .crayon-btn.danger {
+        background: #ffcad4;
+      }
+      .crayon-btn.primary {
+        background: #d8f3dc;
+      }
+
+      /* Vänster: preview-panel */
+      .stage {
+        flex: 1 1 520px;
+        min-width: 320px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .stage h1 {
+        font-size: clamp(1.4rem, 3.6vw, 2rem);
+        text-shadow: 2px 2px 0 var(--accent-yellow);
+        text-align: center;
+      }
+      .stage .subtitle {
+        color: var(--pencil-mid);
+        font-weight: 700;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+      #previewCanvas {
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 1 / 1;
+        background:
+          repeating-linear-gradient(
+            45deg,
+            rgba(44, 39, 36, 0.03) 0 2px,
+            transparent 2px 12px
+          ),
+          #fffdf7;
+        border: 3px dashed rgba(44, 39, 36, 0.3);
+        border-radius: 18px;
+        touch-action: none;
+      }
+      .stage-tools {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+      .stage-tools .tool-chip {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+
+      /* Höger: kontrollpanel */
+      .panel {
+        flex: 1 1 420px;
+        min-width: 300px;
+        max-width: 540px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: calc(100vh - 28px);
+        overflow-y: auto;
+      }
+      .panel h2 {
+        font-size: 1.05rem;
+        margin: 4px 0;
+        color: var(--pencil-mid);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .library-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .library-row input[type="text"] {
+        flex: 1 1 160px;
+        padding: 8px 12px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        border: 3px solid var(--pencil-dark);
+        border-radius: 14px;
+        background: #fffdf7;
+      }
+      select.library-select {
+        flex: 1 1 160px;
+        padding: 8px 10px;
+        font-family: inherit;
+        font-weight: 700;
+        border: 3px solid var(--pencil-dark);
+        border-radius: 14px;
+        background: #fffdf7;
+      }
+      details.section {
+        background: #fffdf7;
+        border: 2.5px solid var(--pencil-dark);
+        border-radius: 16px;
+        padding: 10px 14px;
+      }
+      details.section > summary {
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 1rem;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      details.section > summary::before {
+        content: "▸";
+        display: inline-block;
+        width: 14px;
+        color: var(--pencil-mid);
+        transition: transform 0.15s;
+      }
+      details.section[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.section > *:not(summary) {
+        margin-top: 10px;
+      }
+      .slider-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px 10px;
+        align-items: center;
+        margin: 6px 0;
+      }
+      .slider-row label {
+        grid-column: 1 / -1;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--pencil-mid);
+        display: flex;
+        justify-content: space-between;
+      }
+      .slider-row label span.v {
+        color: var(--pencil-dark);
+        font-weight: 900;
+      }
+      .slider-row input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent-pink);
+      }
+      .color-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .color-row label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        font-size: 0.86rem;
+      }
+      input[type="color"] {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--pencil-dark);
+        border-radius: 50%;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+      }
+      .footer-note {
+        font-size: 0.82rem;
+        color: var(--pencil-mid);
+        font-style: italic;
+        margin-top: 4px;
+        text-align: center;
+      }
+      #toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-120%);
+        background: var(--accent-yellow);
+        border: 3.5px solid var(--pencil-dark);
+        border-radius: 16px;
+        padding: 10px 18px;
+        font-weight: 900;
+        box-shadow:
+          0 0 0 3px #fff,
+          4px 5px 0 rgba(44, 39, 36, 0.28);
+        transition: transform 0.3s ease;
+        z-index: 50;
+        pointer-events: none;
+      }
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @media (max-width: 760px) {
+        body {
+          flex-direction: column;
+        }
+        .panel {
+          max-height: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- VÄNSTERPANEL: PREVIEW -->
+    <section class="paper-box stage">
+      <h1>🐻 Sprattelbjörn</h1>
+      <p class="subtitle">Välj vy, färger och hur björnen ska röra sig.</p>
+      <canvas id="previewCanvas" width="520" height="520"></canvas>
+      <div class="stage-tools">
+        <button class="crayon-btn tool-chip" id="resetBtn">↺ Återställ</button>
+      </div>
+    </section>
+
+    <!-- HÖGERPANEL -->
+    <aside class="paper-box panel">
+      <h2>📒 Mina björnar</h2>
+      <div class="library-row">
+        <input type="text" id="charName" placeholder="Namn på björnen…" maxlength="40" />
+      </div>
+      <div class="library-row">
+        <select id="librarySelect" class="library-select">
+          <option value="">— Välj sparad björn —</option>
+        </select>
+        <button class="crayon-btn primary" id="saveBtn">💾 Spara</button>
+        <button class="crayon-btn danger" id="deleteBtn">🗑️ Ta bort</button>
+      </div>
+      <div class="library-row">
+        <button class="crayon-btn" id="exportBtn">📤 Exportera JSON</button>
+        <button class="crayon-btn" id="importBtn">📥 Importera JSON</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display: none" />
+        <a href="index.html" class="crayon-btn" style="text-decoration: none">🎮 Till spelet</a>
+      </div>
+
+      <details class="section" open>
+        <summary>👀 Vy</summary>
+        <div class="library-row">
+          <select id="view-select" class="library-select">
+            <option value="front">Framifrån</option>
+            <option value="side">Från sidan</option>
+          </select>
+        </div>
+      </details>
+
+      <details class="section" open>
+        <summary>🎨 Färger</summary>
+        <div class="color-row">
+          <label>
+            Päls
+            <input type="color" id="color-body" value="#b08968" />
+          </label>
+          <label>
+            Kläder
+            <input type="color" id="color-clothes" value="#4a5a7a" />
+          </label>
+          <label>
+            Konturer
+            <input type="color" id="color-outline" value="#2c2724" />
+          </label>
+        </div>
+      </details>
+
+      <details class="section" open>
+        <summary>📐 Position &amp; storlek</summary>
+        <div class="slider-row">
+          <label>Skala<span class="v" id="v-scale">0.85</span></label>
+          <input type="range" id="slider-scale" min="0.2" max="1.5" step="0.01" value="0.85" />
+        </div>
+        <div class="slider-row">
+          <label>Flytta X<span class="v" id="v-offsetX">0</span></label>
+          <input type="range" id="slider-offsetX" min="-80" max="80" step="1" value="0" />
+        </div>
+        <div class="slider-row">
+          <label>Flytta Y<span class="v" id="v-offsetY">0</span></label>
+          <input type="range" id="slider-offsetY" min="-80" max="80" step="1" value="0" />
+        </div>
+      </details>
+
+      <details class="section" open>
+        <summary>💃 Animation</summary>
+        <div class="library-row">
+          <select id="anim-select" class="library-select">
+            <option value="none">Stilla</option>
+            <option value="idle">Vagga lugnt</option>
+            <option value="spratt">Spratta</option>
+            <option value="spring">Spring</option>
+            <option value="vinka">Vinka</option>
+          </select>
+        </div>
+        <div class="slider-row">
+          <label>Hastighet<span class="v" id="v-animSpeed">1</span></label>
+          <input type="range" id="slider-animSpeed" min="0.1" max="3" step="0.1" value="1" />
+        </div>
+      </details>
+    </aside>
+
+    <div id="toast" aria-live="polite"></div>
+
+    <script>
+      // =========================================================================
+      // 1. STANDARDKONFIGURATION
+      // =========================================================================
+      const DEFAULT_CONFIG = {
+        name: "",
+        view: "front",
+        colors: {
+          body: "#b08968",
+          clothes: "#4a5a7a",
+          outline: "#2c2724",
+        },
+        scale: 0.85,
+        offsetX: 0,
+        offsetY: 0,
+        anim: "none",
+        animSpeed: 1,
+      };
+
+      const SVG_SRC = "sprattelgubbe-bjorn-i-hangselbyxor-delar.svg";
+      const STORAGE_KEY = "sprattelbjornarLib";
+      const DRAFT_KEY = "sprattelbjornDraft";
+
+      // Björnens mittpunkt i SVG-koordinater skiljer sig mellan vyerna
+      // — sidovyn är skjuten åt höger p.g.a. nosen.
+      const VIEW_CENTER = {
+        front: { x: 160, y: 161 },
+        side: { x: 178, y: 163 },
+      };
+      // Världens origo läggs lite ovanför canvasens mitt så björnen känns ståendes.
+      const TARGET_Y = 0;
+
+      // Varje kroppsdel = egen bild med egen ledpunkt (hämtade ur SVG-kommentarerna).
+      // "order" bestämmer ritordning bakifrån och framåt. Torso + ev. svans har ingen pivot.
+      const PART_META = {
+        front: {
+          order: ["legLeft", "legRight", "armLeft", "armRight", "torso", "head"],
+          ids: {
+            legLeft: "front-legLeft",
+            legRight: "front-legRight",
+            armLeft: "front-armLeft",
+            armRight: "front-armRight",
+            torso: "front-torso",
+            head: "front-head",
+          },
+          pivots: {
+            head: [160, 130],
+            armLeft: [128, 150],
+            armRight: [192, 150],
+            legLeft: [143, 208],
+            legRight: [177, 208],
+          },
+        },
+        side: {
+          order: ["tailOrCape", "legBack", "armBack", "torso", "head", "legFront", "armFront"],
+          ids: {
+            tailOrCape: "side-tailOrCape",
+            legBack: "side-legBack",
+            armBack: "side-armBack",
+            torso: "side-torso",
+            head: "side-head",
+            legFront: "side-legFront",
+            armFront: "side-armFront",
+          },
+          pivots: {
+            head: [165, 130],
+            armBack: [164, 148],
+            armFront: [164, 148],
+            legBack: [162, 208],
+            legFront: [162, 208],
+          },
+        },
+      };
+
+      let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+      let wobbleTime = 0;
+      let originalSvgDoc = null;
+      const partImages = { front: {}, side: {} };
+
+      // =========================================================================
+      // 2. CANVAS
+      // =========================================================================
+      const canvas = document.getElementById("previewCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+      }
+      window.addEventListener("resize", resizeCanvas);
+
+      // =========================================================================
+      // 3. SVG-LADDNING & OMFÄRGNING
+      // =========================================================================
+      function loadImg(svgText) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error("img load"));
+          img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgText);
+        });
+      }
+
+      async function fetchSvg() {
+        try {
+          const res = await fetch(SVG_SRC);
+          if (!res.ok) throw new Error("fetch " + res.status);
+          const text = await res.text();
+          originalSvgDoc = new DOMParser().parseFromString(text, "image/svg+xml");
+          await rebuildPartImages();
+        } catch (err) {
+          console.warn("Kunde inte ladda SVG:", err);
+          showToast("⚠️ Hittar inte SVG:n (servera via HTTP)");
+        }
+      }
+
+      // Bygg om alla delar med nuvarande färger. Körs vid start och när färg ändras.
+      async function rebuildPartImages() {
+        if (!originalSvgDoc) return;
+        const ns = "http://www.w3.org/2000/svg";
+        const serializer = new XMLSerializer();
+        const jobs = [];
+        for (const view of Object.keys(PART_META)) {
+          const meta = PART_META[view];
+          for (const [partName, id] of Object.entries(meta.ids)) {
+            const el = originalSvgDoc.getElementById(id);
+            if (!el) continue;
+            const clone = el.cloneNode(true);
+            clone.removeAttribute("transform");
+            // Färglägg paths baserat på klass
+            clone.querySelectorAll("*").forEach((p) => {
+              const cls = p.getAttribute("class") || "";
+              if (cls.includes("part-body")) {
+                p.setAttribute("fill", config.colors.body);
+              } else if (cls.includes("part-clothes")) {
+                p.setAttribute("fill", config.colors.clothes);
+              }
+              if (p.hasAttribute("stroke")) {
+                p.setAttribute("stroke", config.colors.outline);
+              }
+            });
+            const svgText =
+              `<svg xmlns="${ns}" viewBox="0 0 320 320">` +
+              serializer.serializeToString(clone) +
+              `</svg>`;
+            jobs.push(
+              loadImg(svgText).then((img) => {
+                partImages[view][partName] = img;
+              }),
+            );
+          }
+        }
+        await Promise.all(jobs);
+      }
+
+      let rebuildTimer = null;
+      function requestRebuild() {
+        clearTimeout(rebuildTimer);
+        rebuildTimer = setTimeout(() => rebuildPartImages(), 50);
+      }
+
+      // =========================================================================
+      // 4. ANIMATION
+      // =========================================================================
+      function computePartAngles(view) {
+        const a = {};
+        const t = wobbleTime * config.animSpeed;
+        const mode = config.anim;
+        if (mode === "idle") {
+          const s = Math.sin(t * 1.5);
+          a.head = s * 0.05;
+          if (view === "front") {
+            a.armLeft = s * 0.1;
+            a.armRight = -s * 0.1;
+          } else {
+            a.armFront = s * 0.15;
+            a.armBack = -s * 0.1;
+          }
+        } else if (mode === "spratt") {
+          const s = Math.sin(t * 3);
+          if (view === "front") {
+            a.armLeft = -s * 1.3;
+            a.armRight = s * 1.3;
+            a.legLeft = -s * 0.4;
+            a.legRight = s * 0.4;
+            a.head = s * 0.08;
+          } else {
+            a.armFront = s * 0.8;
+            a.armBack = -s * 0.8;
+            a.legFront = -s * 0.3;
+            a.legBack = s * 0.3;
+            a.head = Math.cos(t * 3) * 0.08;
+          }
+        } else if (mode === "spring") {
+          const s = Math.sin(t * 6);
+          if (view === "front") {
+            a.armLeft = -s * 0.55;
+            a.armRight = s * 0.55;
+            a.legLeft = s * 0.5;
+            a.legRight = -s * 0.5;
+          } else {
+            a.armFront = s * 0.7;
+            a.armBack = -s * 0.7;
+            a.legFront = s * 0.7;
+            a.legBack = -s * 0.7;
+          }
+          a.head = Math.sin(t * 12) * 0.04;
+        } else if (mode === "vinka") {
+          const s = Math.sin(t * 5);
+          if (view === "front") {
+            a.armRight = -2.4 + s * 0.4;
+            a.head = Math.sin(t * 2) * 0.1;
+          } else {
+            a.armFront = -2.2 + s * 0.35;
+            a.head = Math.sin(t * 2) * 0.08;
+          }
+        }
+        return a;
+      }
+
+      // =========================================================================
+      // 5. RITNING
+      // =========================================================================
+      function drawBear() {
+        const parts = partImages[config.view];
+        if (!parts || Object.keys(parts).length === 0) return;
+        const meta = PART_META[config.view];
+        const c = VIEW_CENTER[config.view];
+        const angles = computePartAngles(config.view);
+        ctx.save();
+        ctx.translate(config.offsetX, TARGET_Y + config.offsetY);
+        ctx.scale(config.scale, config.scale);
+        ctx.translate(-c.x, -c.y);
+        for (const partName of meta.order) {
+          const img = parts[partName];
+          if (!img) continue;
+          const pivot = meta.pivots[partName];
+          const angle = angles[partName] || 0;
+          ctx.save();
+          if (pivot && angle !== 0) {
+            ctx.translate(pivot[0], pivot[1]);
+            ctx.rotate(angle);
+            ctx.translate(-pivot[0], -pivot[1]);
+          }
+          ctx.drawImage(img, 0, 0);
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      // =========================================================================
+      // 6. RENDER-LOOP
+      // =========================================================================
+      let lastT = 0;
+      function render(t = 0) {
+        const dt = Math.min(0.05, (t - lastT) / 1000 || 0);
+        lastT = t;
+        wobbleTime += dt;
+
+        resizeCanvas();
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        // Centrera & skala världen så (0,0) hamnar en bit under canvasens mitt
+        const dpr = window.devicePixelRatio || 1;
+        const cssW = w / dpr;
+        const cssH = h / dpr;
+        const worldScale = Math.min(cssW / 320, cssH / 320) * dpr;
+        ctx.setTransform(worldScale, 0, 0, worldScale, w / 2, h / 2);
+
+        // Subtil pappers-markering för "golvet"
+        ctx.save();
+        ctx.strokeStyle = "rgba(44,39,36,0.2)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.moveTo(-140, 125);
+        ctx.lineTo(140, 125);
+        ctx.stroke();
+        ctx.restore();
+
+        drawBear();
+
+        requestAnimationFrame(render);
+      }
+
+      // =========================================================================
+      // 7. KONTROLLER
+      // =========================================================================
+      const sliderMap = {
+        scale: "scale",
+        offsetX: "offsetX",
+        offsetY: "offsetY",
+        animSpeed: "animSpeed",
+      };
+      Object.entries(sliderMap).forEach(([id, key]) => {
+        const el = document.getElementById(`slider-${id}`);
+        const vSpan = document.getElementById(`v-${id}`);
+        el.addEventListener("input", () => {
+          config[key] = parseFloat(el.value);
+          vSpan.textContent = el.value;
+          saveDraft();
+        });
+      });
+
+      ["body", "clothes", "outline"].forEach((key) => {
+        const el = document.getElementById(`color-${key}`);
+        el.addEventListener("input", () => {
+          config.colors[key] = el.value;
+          requestRebuild();
+          saveDraft();
+        });
+      });
+
+      document.getElementById("view-select").addEventListener("change", (e) => {
+        config.view = e.target.value;
+        saveDraft();
+      });
+      document.getElementById("anim-select").addEventListener("change", (e) => {
+        config.anim = e.target.value;
+        saveDraft();
+      });
+
+      function syncControls() {
+        document.getElementById("view-select").value = config.view;
+        document.getElementById("anim-select").value = config.anim;
+        Object.entries(sliderMap).forEach(([id, key]) => {
+          const el = document.getElementById(`slider-${id}`);
+          const vSpan = document.getElementById(`v-${id}`);
+          el.value = config[key];
+          vSpan.textContent = String(config[key]);
+        });
+        ["body", "clothes", "outline"].forEach((key) => {
+          document.getElementById(`color-${key}`).value = config.colors[key];
+        });
+        document.getElementById("charName").value = config.name || "";
+      }
+
+      // =========================================================================
+      // 8. BIBLIOTEK
+      // =========================================================================
+      function showToast(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        clearTimeout(el._tid);
+        el._tid = setTimeout(() => el.classList.remove("show"), 1700);
+      }
+
+      function loadLibrary() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        } catch (e) {
+          return {};
+        }
+      }
+      function saveLibrary(lib) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(lib));
+      }
+      function refreshLibrarySelect() {
+        const lib = loadLibrary();
+        const sel = document.getElementById("librarySelect");
+        const current = sel.value;
+        sel.innerHTML = '<option value="">— Välj sparad björn —</option>';
+        Object.keys(lib)
+          .sort()
+          .forEach((name) => {
+            const o = document.createElement("option");
+            o.value = name;
+            o.textContent = name;
+            sel.appendChild(o);
+          });
+        sel.value = current;
+      }
+
+      function saveDraft() {
+        try {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(config));
+        } catch (e) {}
+      }
+      function loadDraft() {
+        try {
+          const d = localStorage.getItem(DRAFT_KEY);
+          if (d) mergeInto(config, JSON.parse(d));
+        } catch (e) {}
+      }
+
+      function mergeInto(target, src) {
+        for (const k in src) {
+          if (
+            src[k] &&
+            typeof src[k] === "object" &&
+            !Array.isArray(src[k]) &&
+            target[k] &&
+            typeof target[k] === "object"
+          ) {
+            mergeInto(target[k], src[k]);
+          } else {
+            target[k] = src[k];
+          }
+        }
+      }
+
+      document.getElementById("charName").addEventListener("input", (e) => {
+        config.name = e.target.value;
+        saveDraft();
+      });
+
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        const name = (config.name || "").trim();
+        if (!name) {
+          showToast("Skriv ett namn på björnen först!");
+          document.getElementById("charName").focus();
+          return;
+        }
+        const lib = loadLibrary();
+        config.name = name;
+        lib[name] = JSON.parse(JSON.stringify(config));
+        saveLibrary(lib);
+        refreshLibrarySelect();
+        document.getElementById("librarySelect").value = name;
+        showToast(`💾 "${name}" sparad!`);
+      });
+
+      document.getElementById("librarySelect").addEventListener("change", (e) => {
+        const name = e.target.value;
+        if (!name) return;
+        const lib = loadLibrary();
+        if (!lib[name]) return;
+        config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        mergeInto(config, lib[name]);
+        syncControls();
+        requestRebuild();
+        saveDraft();
+        showToast(`📥 "${name}" inladdad`);
+      });
+
+      document.getElementById("deleteBtn").addEventListener("click", () => {
+        const sel = document.getElementById("librarySelect");
+        const name = sel.value;
+        if (!name) {
+          showToast("Välj en sparad björn först!");
+          return;
+        }
+        if (!confirm(`Ta bort "${name}"?`)) return;
+        const lib = loadLibrary();
+        delete lib[name];
+        saveLibrary(lib);
+        refreshLibrarySelect();
+        showToast(`🗑️ "${name}" borttagen`);
+      });
+
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const data = JSON.stringify(config, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${(config.name || "bjorn").replace(/\s+/g, "_")}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+      });
+
+      document.getElementById("importBtn").addEventListener("click", () => {
+        document.getElementById("importFile").click();
+      });
+      document.getElementById("importFile").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            mergeInto(config, parsed);
+            syncControls();
+            requestRebuild();
+            saveDraft();
+            showToast(`📥 "${config.name || file.name}" importerad`);
+          } catch (err) {
+            showToast("Fel: Kunde inte läsa JSON-filen");
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (!confirm("Återställ till standardbjörnen?")) return;
+        config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        syncControls();
+        requestRebuild();
+        saveDraft();
+      });
+
+      // =========================================================================
+      // 9. STARTA
+      // =========================================================================
+      loadDraft();
+      refreshLibrarySelect();
+      syncControls();
+      resizeCanvas();
+      fetchSvg();
+      requestAnimationFrame(render);
+    </script>
+  </body>
+</html>

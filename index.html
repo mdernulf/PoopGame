@@ -232,6 +232,23 @@
         transform: scale(1.06) rotate(-1deg);
       }
 
+      /* Karaktärsknapparna visar själva SVG-figuren som miniatyr. */
+      .char-chip {
+        padding: 4px;
+        width: 72px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .char-thumb {
+        width: 60px;
+        height: 60px;
+        display: block;
+        pointer-events: none;
+        object-fit: contain;
+      }
+
       .color-dot {
         width: 34px;
         height: 34px;
@@ -367,10 +384,468 @@
       .unicorn-chip {
         background: linear-gradient(135deg, #ffccd5 0%, #cdb4db 50%, #bde0fe 100%) !important;
       }
+
+      /* =========================================================
+         PUPPET-LAGRET (inline SVG över canvasen)
+         ========================================================= */
+      #puppetLayer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 2;
+      }
+      .puppet-wrapper {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        overflow: visible;
+        transform-origin: 160px 282px;
+        transform: scale(0.55);
+        will-change: transform, left, top;
+        filter: url(#puppetPaperCutout);
+      }
+      .puppet-wrapper svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        display: block;
+      }
+
+      /* =========================================================
+         EXAKT RIGG & LEDER (viewBox="0 0 320 320")
+         ========================================================= */
+      .puppet-wrapper #flip-wrapper,
+      .puppet-wrapper #character-front,
+      .puppet-wrapper #front-torso-group,
+      .puppet-wrapper #front-tailOrCape,
+      .puppet-wrapper #front-head,
+      .puppet-wrapper #front-armLeft,
+      .puppet-wrapper #front-armRight,
+      .puppet-wrapper #front-legLeft,
+      .puppet-wrapper #front-legRight,
+      .puppet-wrapper #character-side,
+      .puppet-wrapper #side-torso-group,
+      .puppet-wrapper #side-tailOrCape,
+      .puppet-wrapper #side-head,
+      .puppet-wrapper #side-armBack,
+      .puppet-wrapper #side-armFront,
+      .puppet-wrapper #side-legBack,
+      .puppet-wrapper #side-legFront {
+        transform-box: view-box;
+      }
+
+      /* Visa framifrån vid idle, sidoprofil vid rörelse */
+      .puppet-wrapper #character-front { display: none; }
+      .puppet-wrapper #character-side  { display: inline; }
+      .puppet-wrapper.anim-idle #character-front { display: inline; }
+      .puppet-wrapper.anim-idle #character-side  { display: none; }
+
+      /* Spegelvändning höger / vänster */
+      .puppet-wrapper #flip-wrapper {
+        transform-origin: 160px 160px;
+      }
+      .puppet-wrapper.facing-left #flip-wrapper {
+        transform: scaleX(-1);
+      }
+
+      /* Exakta rotationspunkter – FRAMIFRÅN */
+      .puppet-wrapper #character-front   { transform-origin: 160px 175px; }
+      .puppet-wrapper #front-torso-group { transform-origin: 160px 175px; }
+      .puppet-wrapper #front-head        { transform-origin: 160px 130px; }
+      .puppet-wrapper #front-tailOrCape  { transform-origin: 160px 180px; }
+      .puppet-wrapper #front-armLeft     { transform-origin: 128px 150px; }
+      .puppet-wrapper #front-armRight    { transform-origin: 192px 150px; }
+      .puppet-wrapper #front-legLeft     { transform-origin: 143px 208px; }
+      .puppet-wrapper #front-legRight    { transform-origin: 177px 208px; }
+
+      /* Exakta rotationspunkter – SIDOPROFIL */
+      .puppet-wrapper #character-side    { transform-origin: 165px 175px; }
+      .puppet-wrapper #side-torso-group  { transform-origin: 165px 175px; }
+      .puppet-wrapper #side-head         { transform-origin: 165px 130px; }
+      .puppet-wrapper #side-tailOrCape   { transform-origin: 140px 180px; }
+      .puppet-wrapper #side-armFront     { transform-origin: 164px 148px; }
+      .puppet-wrapper #side-armBack      { transform-origin: 164px 148px; }
+      .puppet-wrapper #side-legFront     { transform-origin: 162px 208px; }
+      .puppet-wrapper #side-legBack      { transform-origin: 162px 208px; }
+
+      /* =========================================================
+         1. STÅ (IDLE – FRAMIFRÅN)
+         ========================================================= */
+      .puppet-wrapper.anim-idle #front-torso-group { animation: puppetIdleBreathe 2.6s ease-in-out infinite; }
+      .puppet-wrapper.anim-idle #front-head        { animation: puppetIdleHead 3.4s ease-in-out infinite; }
+      .puppet-wrapper.anim-idle #front-tailOrCape  { animation: puppetIdleTail 2.4s ease-in-out infinite; }
+      .puppet-wrapper.anim-idle #front-armLeft     { animation: puppetIdleArmL 2.6s ease-in-out infinite; }
+      .puppet-wrapper.anim-idle #front-armRight    { animation: puppetIdleArmR 2.6s ease-in-out infinite; }
+
+      @keyframes puppetIdleBreathe {
+        0%, 100% { transform: translateY(0px) scaleY(1); }
+        50%      { transform: translateY(-2.5px) scaleY(1.022); }
+      }
+      @keyframes puppetIdleHead {
+        0%, 100% { transform: rotate(-3deg); }
+        50%      { transform: rotate(3.5deg); }
+      }
+      @keyframes puppetIdleTail {
+        0%, 100% { transform: rotate(-3deg); }
+        50%      { transform: rotate(4deg); }
+      }
+      @keyframes puppetIdleArmL {
+        0%, 100% { transform: rotate(4deg); }
+        50%      { transform: rotate(12deg); }
+      }
+      @keyframes puppetIdleArmR {
+        0%, 100% { transform: rotate(-4deg); }
+        50%      { transform: rotate(-12deg); }
+      }
+
+      /* =========================================================
+         2. SPRINGA (RUN – SIDOPROFIL)
+         ========================================================= */
+      .puppet-wrapper.anim-run #character-side { animation: puppetRunBody 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-head      { animation: puppetRunHead 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-tailOrCape{ animation: puppetRunTail 0.34s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-armFront  { animation: puppetRunArmF 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-armBack   { animation: puppetRunArmB 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-legFront  { animation: puppetRunLegF 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-run #side-legBack   { animation: puppetRunLegB 0.56s ease-in-out infinite; }
+
+      @keyframes puppetRunBody {
+        0%, 100% { transform: translateY(1px) rotate(10deg) scale(1.03, 0.97); }
+        25%      { transform: translateY(-15px) rotate(12deg) scale(0.97, 1.04); }
+        50%      { transform: translateY(1px) rotate(9deg) scale(1.03, 0.97); }
+        75%      { transform: translateY(-15px) rotate(12deg) scale(0.97, 1.04); }
+      }
+      @keyframes puppetRunHead {
+        0%, 100% { transform: rotate(-9deg); }
+        50%      { transform: rotate(-3deg) translateY(-2px); }
+      }
+      @keyframes puppetRunTail {
+        0%, 100% { transform: rotate(8deg); }
+        50%      { transform: rotate(22deg); }
+      }
+      @keyframes puppetRunArmF {
+        0%, 100% { transform: rotate(-52deg); }
+        50%      { transform: rotate(46deg); }
+      }
+      @keyframes puppetRunArmB {
+        0%, 100% { transform: rotate(46deg); }
+        50%      { transform: rotate(-52deg); }
+      }
+      @keyframes puppetRunLegF {
+        0%, 100% { transform: rotate(42deg); }
+        50%      { transform: rotate(-42deg); }
+      }
+      @keyframes puppetRunLegB {
+        0%, 100% { transform: rotate(-42deg); }
+        50%      { transform: rotate(42deg); }
+      }
+
+      /* =========================================================
+         3. HOPPA (JUMP – SIDOPROFIL)
+         ========================================================= */
+      .puppet-wrapper.anim-jump #character-side { animation: puppetJumpBody 1.18s cubic-bezier(0.36, 0, 0.28, 1) infinite; }
+      .puppet-wrapper.anim-jump #side-head      { animation: puppetJumpHead 1.18s ease-in-out infinite; }
+      .puppet-wrapper.anim-jump #side-tailOrCape{ animation: puppetJumpTail 1.18s ease-in-out infinite; }
+      .puppet-wrapper.anim-jump #side-armFront  { animation: puppetJumpArmF 1.18s ease-in-out infinite; }
+      .puppet-wrapper.anim-jump #side-armBack   { animation: puppetJumpArmB 1.18s ease-in-out infinite; }
+      .puppet-wrapper.anim-jump #side-legFront  { animation: puppetJumpLegF 1.18s ease-in-out infinite; }
+      .puppet-wrapper.anim-jump #side-legBack   { animation: puppetJumpLegB 1.18s ease-in-out infinite; }
+
+      @keyframes puppetJumpBody {
+        0%, 100% { transform: translateY(0px) rotate(0deg) scale(1, 1); }
+        18%      { transform: translateY(12px) rotate(7deg) scale(1.12, 0.86); }
+        48%      { transform: translateY(-58px) rotate(-5deg) scale(0.93, 1.08); }
+        78%      { transform: translateY(10px) rotate(6deg) scale(1.13, 0.87); }
+        90%      { transform: translateY(-2px) rotate(0deg) scale(0.98, 1.02); }
+      }
+      @keyframes puppetJumpHead {
+        0%, 100% { transform: rotate(0deg); }
+        18%      { transform: rotate(-6deg); }
+        48%      { transform: rotate(-12deg) translateY(-2px); }
+        78%      { transform: rotate(6deg); }
+      }
+      @keyframes puppetJumpTail {
+        0%, 100% { transform: rotate(0deg); }
+        48%      { transform: rotate(26deg); }
+      }
+      @keyframes puppetJumpArmF {
+        0%, 100% { transform: rotate(10deg); }
+        18%      { transform: rotate(50deg); }
+        48%      { transform: rotate(-138deg); }
+        78%      { transform: rotate(24deg); }
+      }
+      @keyframes puppetJumpArmB {
+        0%, 100% { transform: rotate(-8deg); }
+        18%      { transform: rotate(40deg); }
+        48%      { transform: rotate(-124deg); }
+        78%      { transform: rotate(12deg); }
+      }
+      @keyframes puppetJumpLegF {
+        0%, 100% { transform: rotate(0deg); }
+        18%      { transform: rotate(-22deg); }
+        48%      { transform: rotate(-32deg); }
+        78%      { transform: rotate(-14deg); }
+      }
+      @keyframes puppetJumpLegB {
+        0%, 100% { transform: rotate(0deg); }
+        18%      { transform: rotate(20deg); }
+        48%      { transform: rotate(30deg); }
+        78%      { transform: rotate(16deg); }
+      }
+
+      /* =========================================================
+         4. SIMMA (SWIM – SIDOPROFIL)
+         ========================================================= */
+      .puppet-wrapper.anim-swim #character-side { animation: puppetSwimFloat 1.9s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-head      { animation: puppetSwimHead 1.9s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-tailOrCape{ animation: puppetSwimTail 0.75s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-armFront  { animation: puppetSwimArmF 1.15s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-armBack   { animation: puppetSwimArmB 1.15s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-legFront  { animation: puppetSwimLegF 0.58s ease-in-out infinite; }
+      .puppet-wrapper.anim-swim #side-legBack   { animation: puppetSwimLegB 0.58s ease-in-out infinite; }
+
+      @keyframes puppetSwimFloat {
+        0%, 100% { transform: translate(0px, -16px) rotate(76deg); }
+        50%      { transform: translate(10px, -4px) rotate(82deg); }
+      }
+      @keyframes puppetSwimHead {
+        0%, 100% { transform: rotate(-42deg); }
+        50%      { transform: rotate(-32deg); }
+      }
+      @keyframes puppetSwimTail {
+        0%, 100% { transform: rotate(-10deg); }
+        50%      { transform: rotate(16deg); }
+      }
+      @keyframes puppetSwimArmF {
+        0%, 100% { transform: rotate(-134deg); }
+        50%      { transform: rotate(24deg); }
+      }
+      @keyframes puppetSwimArmB {
+        0%, 100% { transform: rotate(24deg); }
+        50%      { transform: rotate(-134deg); }
+      }
+      @keyframes puppetSwimLegF {
+        0%, 100% { transform: rotate(24deg); }
+        50%      { transform: rotate(-22deg); }
+      }
+      @keyframes puppetSwimLegB {
+        0%, 100% { transform: rotate(-22deg); }
+        50%      { transform: rotate(24deg); }
+      }
+
+      /* =========================================================
+         5. VOLT (DOUBLE-JUMP FLIP – SIDOPROFIL)
+         ========================================================= */
+      .puppet-wrapper.anim-flip #character-side  { animation: puppetFlipBody 0.57s linear infinite; }
+      .puppet-wrapper.anim-flip #side-head       { transform: rotate(-10deg); }
+      .puppet-wrapper.anim-flip #side-armFront   { transform: rotate(-120deg); }
+      .puppet-wrapper.anim-flip #side-armBack    { transform: rotate(-120deg); }
+      .puppet-wrapper.anim-flip #side-legFront   { transform: rotate(70deg); }
+      .puppet-wrapper.anim-flip #side-legBack    { transform: rotate(-60deg); }
+      .puppet-wrapper.anim-flip #side-tailOrCape { transform: rotate(-30deg); }
+
+      @keyframes puppetFlipBody {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+
+      /* =========================================================
+         6. BAKÅTVOLT (BANANA SLIP – SIDOPROFIL)
+         ========================================================= */
+      .puppet-wrapper.anim-backflip #character-side  { animation: puppetBackflipBody 0.57s linear infinite; }
+      .puppet-wrapper.anim-backflip #side-head       { transform: rotate(-20deg); }
+      .puppet-wrapper.anim-backflip #side-armFront   { transform: rotate(80deg); }
+      .puppet-wrapper.anim-backflip #side-armBack    { transform: rotate(60deg); }
+      .puppet-wrapper.anim-backflip #side-legFront   { transform: rotate(-50deg); }
+      .puppet-wrapper.anim-backflip #side-legBack    { transform: rotate(50deg); }
+      .puppet-wrapper.anim-backflip #side-tailOrCape { transform: rotate(40deg); }
+
+      @keyframes puppetBackflipBody {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(-360deg); }
+      }
+
+      /* =========================================================
+         7. SITTER PÅ RUMPAN (BANANA SIT – SIDOPROFIL)
+         ========================================================= */
+      /* translateY är i viewBox-enheter (320×320), inte skärmpixlar. Vi skalar
+         wrappern med 0.42 → 52 viewBox-enheter ≈ 22 skärmpixlar nedåt
+         (samma visuella offset som den procedurella sitOffsetY). */
+      .puppet-wrapper.anim-sit #side-torso-group { transform: translateY(52px) rotate(-12deg); }
+      .puppet-wrapper.anim-sit #side-head        { transform: rotate(10deg); }
+      .puppet-wrapper.anim-sit #side-legFront    { transform: rotate(-82deg); }
+      .puppet-wrapper.anim-sit #side-legBack     { transform: rotate(-76deg); }
+      .puppet-wrapper.anim-sit #side-tailOrCape  { transform: rotate(-20deg); }
+      .puppet-wrapper.anim-sit #side-armFront    { animation: puppetSitArmF 0.085s ease-in-out infinite alternate; }
+      .puppet-wrapper.anim-sit #side-armBack     { animation: puppetSitArmB 0.085s ease-in-out infinite alternate; }
+
+      @keyframes puppetSitArmF {
+        from { transform: rotate(-54deg); }
+        to   { transform: rotate(54deg); }
+      }
+      @keyframes puppetSitArmB {
+        from { transform: rotate(54deg); }
+        to   { transform: rotate(-54deg); }
+      }
+
+      /* =========================================================
+         DEV-PANEL för papperskant & skugga
+         ========================================================= */
+      #devToggleBtn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2.5px solid var(--pencil-dark, #2c2724);
+        background: #fffdf7;
+        box-shadow: 0 0 0 2px #fff, 3px 4px 0 rgba(44, 39, 36, 0.28);
+        cursor: pointer;
+        font-size: 18px;
+        z-index: 9999;
+        padding: 0;
+        pointer-events: auto;
+      }
+      #devToggleBtn:hover { background: #ffd166; }
+      #devPanel {
+        position: fixed;
+        top: 60px;
+        right: 10px;
+        width: 260px;
+        padding: 12px 14px;
+        background: rgba(255, 253, 247, 0.96);
+        border: 2.5px solid var(--pencil-dark, #2c2724);
+        border-radius: 14px;
+        box-shadow: 0 0 0 3px #fff, 4px 5px 0 rgba(44, 39, 36, 0.28);
+        font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
+        font-size: 12px;
+        z-index: 9998;
+        display: none;
+        pointer-events: auto;
+      }
+      #devPanel.visible { display: block !important; }
+      #devPanel h3 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #5a524c;
+      }
+      #devPanel hr {
+        margin: 8px 0;
+        border: none;
+        border-top: 1.5px dashed rgba(44, 39, 36, 0.3);
+      }
+      #devPanel label {
+        display: block;
+        margin: 6px 0;
+        font-weight: 700;
+        color: #5a524c;
+      }
+      #devPanel label span.v {
+        float: right;
+        color: #2c2724;
+        font-weight: 900;
+      }
+      #devPanel input[type="range"] {
+        width: 100%;
+        accent-color: #ff758f;
+      }
+      #devResetBtn,
+      #devCopyBtn {
+        margin-top: 8px;
+        width: 100%;
+        padding: 6px;
+        border: 2px solid #2c2724;
+        border-radius: 10px;
+        font-family: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      #devCopyBtn {
+        background: #d8f3dc;
+      }
+      #devCopyBtn.copied {
+        background: #ffd166;
+      }
+      #devResetBtn {
+        background: #ffcad4;
+      }
     </style>
   </head>
   <body>
     <canvas id="gameCanvas"></canvas>
+
+    <!-- Inline-SVG-puppet över canvasen. SVG:ns innehåll injiceras av
+         loadPuppet() och animeras med CSS via klasser på .puppet-wrapper. -->
+    <div id="puppetLayer" aria-hidden="true">
+      <div class="puppet-wrapper anim-idle"></div>
+    </div>
+
+    <!-- SVG-filter som ger spelaren samma vita papperskant + skugga som
+         canvas-objekten. Dilaterar siluetten, fyller vitt, lägger på en
+         mjuk skugga, och ritar originalet överst. Justeras av dev-panelen. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <filter id="puppetPaperCutout" x="-30%" y="-30%" width="160%" height="160%">
+          <feMorphology in="SourceGraphic" operator="dilate" radius="10" result="dil" />
+          <feColorMatrix
+            in="dil"
+            type="matrix"
+            values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 1 0"
+            result="whiteEdge"
+          />
+          <feGaussianBlur in="whiteEdge" stdDeviation="2.4" result="sBlur" />
+          <feOffset in="sBlur" dx="-3" dy="0" result="sOff" />
+          <feColorMatrix
+            in="sOff"
+            type="matrix"
+            values="0 0 0 0 0.231   0 0 0 0 0.2   0 0 0 0 0.18   0 0 0 1 0"
+            result="shadow"
+          />
+          <feMerge>
+            <feMergeNode in="shadow" />
+            <feMergeNode in="whiteEdge" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+
+    <!-- Utvecklarpanel: justera papperskant och skugga live.
+         Toggla med ⚙️-knappen eller 'D'-tangenten. -->
+    <button id="devToggleBtn" title="Justera papper &amp; skugga (D)">⚙️</button>
+    <div id="devPanel">
+      <h3>Papper &amp; skugga</h3>
+      <label>Spelets zoom <span class="v" id="v-dev-worldScale">1</span>
+        <input type="range" id="dev-worldScale" min="0.5" max="2.5" step="0.05" value="1" /></label>
+      <label>Spelarens storlek <span class="v" id="v-dev-playerScale">0.55</span>
+        <input type="range" id="dev-playerScale" min="0.2" max="1.2" step="0.01" value="0.55" /></label>
+      <hr />
+      <label>Spelarens kant <span class="v" id="v-dev-playerEdge">10</span>
+        <input type="range" id="dev-playerEdge" min="0" max="20" step="0.5" value="10" /></label>
+      <label>Objektens kant <span class="v" id="v-dev-objectsEdge">4.5</span>
+        <input type="range" id="dev-objectsEdge" min="0" max="20" step="0.5" value="4.5" /></label>
+      <hr />
+      <label>Skuggtäthet (hård) <span class="v" id="v-dev-shadowOpacity">0.5</span>
+        <input type="range" id="dev-shadowOpacity" min="0" max="0.6" step="0.02" value="0.5" /></label>
+      <label>Skugg-offset X <span class="v" id="v-dev-shadowOffsetX">-3</span>
+        <input type="range" id="dev-shadowOffsetX" min="-20" max="20" step="0.5" value="-3" /></label>
+      <label>Skugg-offset Y <span class="v" id="v-dev-shadowOffsetY">0</span>
+        <input type="range" id="dev-shadowOffsetY" min="-20" max="20" step="0.5" value="0" /></label>
+      <hr />
+      <label>Mjuk skuggtäthet <span class="v" id="v-dev-softShadowOpacity">0.06</span>
+        <input type="range" id="dev-softShadowOpacity" min="0" max="0.5" step="0.01" value="0.06" /></label>
+      <label>Mjuk offset X <span class="v" id="v-dev-softShadowOffsetX">0.5</span>
+        <input type="range" id="dev-softShadowOffsetX" min="-20" max="20" step="0.5" value="0.5" /></label>
+      <label>Mjuk offset Y <span class="v" id="v-dev-softShadowOffsetY">3.5</span>
+        <input type="range" id="dev-softShadowOffsetY" min="-20" max="20" step="0.5" value="3.5" /></label>
+      <button id="devCopyBtn">📋 Kopiera inställningar</button>
+      <button id="devResetBtn">↺ Återställ</button>
+    </div>
 
     <!-- HUD UNDER SPEL -->
     <div id="hudLayer" class="ui-layer hidden">
@@ -405,17 +880,6 @@
         </div>
       </div>
 
-      <div class="controls-hud">
-        <button id="duckBtn" class="crayon-btn action-pad pad-duck interactive">
-          <span style="font-size: 1.85rem">⬇️</span>
-          <span>Huka!</span>
-        </button>
-
-        <button id="jumpBtn" class="crayon-btn action-pad pad-jump interactive">
-          <span style="font-size: 1.85rem">⬆️</span>
-          <span>Hoppa!</span>
-        </button>
-      </div>
     </div>
 
     <!-- VÄRLDSBYTE-BANDEROLL -->
@@ -425,9 +889,9 @@
     <div id="kioskOverlay" class="kiosk-overlay hidden">
       <div class="paper-box kiosk-card">
         <div class="tape-strip"></div>
-        <h2 id="kioskTitle" class="game-title" style="font-size: clamp(1.6rem, 4.5vw, 2.3rem)">🍭 Mål! Godiskiosken!</h2>
+        <h2 id="kioskTitle" class="game-title" style="font-size: clamp(1.6rem, 4.5vw, 2.3rem)">🏁 🍭</h2>
         <div class="fridge-board">
-          <div id="magnetUnlockText" class="section-label" style="margin-bottom: 2px">🧲 +1 Kylskåpsmagnet! (3 = 🦄)</div>
+          <div id="magnetUnlockText" class="section-label" style="margin-bottom: 2px">🧲 +1 → 🦄</div>
           <div class="magnet-slots" id="kioskMagnetSlots">
             <div class="magnet-slot">?</div>
             <div class="magnet-slot">?</div>
@@ -435,21 +899,17 @@
           </div>
         </div>
         <div class="candy-row">
-          <button class="crayon-btn candy-btn" data-candy="🍭 Klubba!">
+          <button class="crayon-btn candy-btn" data-candy="🍭">
             <span>🍭</span>
-            <span class="candy-label">Klubba</span>
           </button>
-          <button class="crayon-btn candy-btn" data-candy="🍫 Choklad!">
+          <button class="crayon-btn candy-btn" data-candy="🍫">
             <span>🍫</span>
-            <span class="candy-label">Choklad</span>
           </button>
-          <button class="crayon-btn candy-btn" data-candy="🧁 Muffins!">
+          <button class="crayon-btn candy-btn" data-candy="🧁">
             <span>🧁</span>
-            <span class="candy-label">Muffins</span>
           </button>
-          <button class="crayon-btn candy-btn" data-candy="🍦 Glass!">
+          <button class="crayon-btn candy-btn" data-candy="🍦">
             <span>🍦</span>
-            <span class="candy-label">Glass</span>
           </button>
         </div>
       </div>
@@ -459,41 +919,24 @@
     <div id="startOverlay" class="start-overlay">
       <div class="paper-box start-card">
         <div class="tape-strip"></div>
-        <h1 class="game-title">✂️ Sprattelgubben på Äventyr!</h1>
-        <p class="subtitle">Välj din sagovän i papper &amp; vaxkrita – akta dig för hund- och fågelbajs! 💩</p>
+        <h1 class="game-title">✂️</h1>
 
-        <div class="section-label">1. Välj sagokaraktär:</div>
-        <div class="picker-row" id="charPicker">
-          <button class="crayon-btn choice-chip active" data-char="royal">👑 Prins / Prinsessa</button>
-          <button class="crayon-btn choice-chip" data-char="knight">🛡️ Riddaren</button>
-          <button class="crayon-btn choice-chip" data-char="wizard">🧙 Trollkarlen</button>
-          <button class="crayon-btn choice-chip" data-char="fairy">🧚 Älvan</button>
-          <button class="crayon-btn choice-chip" data-char="dragon">🐲 Draken</button>
-        </div>
+        <!-- Knapparna byggs dynamiskt av initCharacterPicker() från filerna
+             i svg-players/. Startar med fallback-listan ifall listning misslyckas. -->
+        <div class="picker-row" id="charPicker"></div>
 
-        <div class="section-label">2. Välj pappersfärg:</div>
-        <div class="picker-row" id="colorPicker">
-          <button class="color-dot active" data-color="#ff6b6b" style="background: #ff6b6b" aria-label="Röd"></button>
-          <button class="color-dot" data-color="#4cc9f0" style="background: #4cc9f0" aria-label="Blå"></button>
-          <button class="color-dot" data-color="#ffd166" style="background: #ffd166" aria-label="Gul"></button>
-          <button class="color-dot" data-color="#06d6a0" style="background: #06d6a0" aria-label="Grön"></button>
-          <button class="color-dot" data-color="#c77dff" style="background: #c77dff" aria-label="Lila"></button>
-          <button class="color-dot" data-color="#ff9f1c" style="background: #ff9f1c" aria-label="Orange"></button>
-        </div>
-
-        <div class="section-label">3. Välj värld att börja i:</div>
         <div class="picker-row" id="worldPicker">
-          <button class="crayon-btn choice-chip active" data-world="0">🏰 Sagolandskap</button>
-          <button class="crayon-btn choice-chip" data-world="1">🌳 Parken</button>
-          <button class="crayon-btn choice-chip" data-world="2">🏙️ Staden</button>
-          <button class="crayon-btn choice-chip" data-world="3">🎪 Leklandet</button>
-          <button class="crayon-btn choice-chip" data-world="4">🎡 Tivolit</button>
-          <button class="crayon-btn choice-chip" data-world="5">🍭 Godislandet</button>
-          <button id="unicornWorldBtn" class="crayon-btn choice-chip unicorn-chip hidden" data-world="6">🦄 Magic Unicorn World</button>
+          <button class="crayon-btn choice-chip active" data-world="0">🏰</button>
+          <button class="crayon-btn choice-chip" data-world="1">🌳</button>
+          <button class="crayon-btn choice-chip" data-world="2">🏙️</button>
+          <button class="crayon-btn choice-chip" data-world="3">🎪</button>
+          <button class="crayon-btn choice-chip" data-world="4">🎡</button>
+          <button class="crayon-btn choice-chip" data-world="5">🍭</button>
+          <button id="unicornWorldBtn" class="crayon-btn choice-chip unicorn-chip hidden" data-world="6">🦄</button>
         </div>
 
         <div class="fridge-board" style="margin-bottom: 10px">
-          <div class="section-label" style="margin-bottom: 2px">🧲 Kylskåpsmagneter (3 st = 🦄 Magic Unicorn World!)</div>
+          <div class="section-label" style="margin-bottom: 2px">🧲 × 3 = 🦄</div>
           <div class="magnet-slots" id="startMagnetSlots">
             <div class="magnet-slot">?</div>
             <div class="magnet-slot">?</div>
@@ -501,7 +944,12 @@
           </div>
         </div>
 
-        <button id="startBtn" class="crayon-btn play-big-btn">▶️ SPELA!</button>
+        <button id="startBtn" class="crayon-btn play-big-btn">▶️</button>
+        <div style="margin-top: 10px">
+          <a href="character-editor.html" class="crayon-btn choice-chip" style="text-decoration: none; background: #e0fbfc">
+            ✂️
+          </a>
+        </div>
       </div>
     </div>
 
@@ -1107,6 +1555,20 @@
       const shadowMaskCanvas = document.createElement("canvas");
       const shadowMaskCtx = shadowMaskCanvas.getContext("2d");
 
+      // Globala papperskant- och skugginställningar (styrs via dev-panelen).
+      // "playerEdge" används inte av canvas-ritningen (spelaren renderas med
+      // DOM/SVG-filtret puppetPaperCutout) — värdet spegas bara dit vid ändring.
+      const PAPER = {
+        playerEdge: 10,
+        objectsEdge: 4.5,
+        shadowOpacity: 0.5,
+        softShadowOpacity: 0.06,
+        shadowOffsetX: -3,
+        shadowOffsetY: 0,
+        softShadowOffsetX: 0.5,
+        softShadowOffsetY: 3.5,
+      };
+
       /**
        * Ritar en figur som ett äkta, ojämnt saxklippt pappersurklipp med kritvit ram & autentisk pappersskugga
        */
@@ -1130,7 +1592,7 @@
         // Bygg en solid kritvit saxklippt papperssilhuett med mjuk, lätt ojämn saxkant
         whiteMaskCtx.clearRect(0, 0, w, h);
         whiteMaskCtx.globalCompositeOperation = "source-over";
-        const radius = 8.5;
+        const radius = PAPER.objectsEdge;
         const steps = 32;
         for (let i = 0; i < steps; i++) {
           const a = (i / steps) * Math.PI * 2;
@@ -1152,13 +1614,17 @@
 
         // 1. Autentisk flerskiktad pappersskugga (mjuk spridd skugga + skarpare kontaktskugga)
         ctx.save();
-        ctx.globalAlpha = 0.08;
+        ctx.globalAlpha = PAPER.softShadowOpacity;
         for (let s = 0; s < 6; s++) {
           const sa = (s / 6) * Math.PI * 2;
-          ctx.drawImage(shadowMaskCanvas, -originX + 7 + Math.cos(sa) * 3.5, -originY + 9 + Math.sin(sa) * 3.5);
+          ctx.drawImage(
+            shadowMaskCanvas,
+            -originX + PAPER.softShadowOffsetX + Math.cos(sa) * 3.5,
+            -originY + PAPER.softShadowOffsetY + Math.sin(sa) * 3.5,
+          );
         }
-        ctx.globalAlpha = 0.16;
-        ctx.drawImage(shadowMaskCanvas, -originX + 4, -originY + 5);
+        ctx.globalAlpha = PAPER.shadowOpacity;
+        ctx.drawImage(shadowMaskCanvas, -originX + PAPER.shadowOffsetX, -originY + PAPER.shadowOffsetY);
         ctx.restore();
 
         // 2. Subtil mörk papperskant + ogenomskinlig kritvit urklippskant
@@ -2976,6 +3442,211 @@
        * 6. SPRATTELGUBBEN MED LEDADE ARMAR & BEN FÖR ALLA RÖRELSESÄTT
        * =========================================================================
        */
+      /**
+       * =========================================================================
+       * SVG-RIGGADE SPELKARAKTÄRER (inline SVG + CSS-animationer)
+       * =========================================================================
+       * Riggade .svg-filer från extern studio droppas in i svg-players/.
+       * Vi hämtar filen, injicerar den inline i <div class="puppet-wrapper">
+       * och låter studions CSS (längst ned i <style>) sköta alla rotationer
+       * via klass-byten (anim-idle / anim-run / anim-jump / anim-swim +
+       * facing-left). Ingen JS rör de animerade grupperna.
+       */
+      // Kända karaktärer med etikett + emoji. Okända filer i svg-players/
+      // får ett automatiskt namn (filnamnet med stor första bokstav) och
+      // en standard-emoji — editera här för att ge dem riktiga namn.
+      const CHARACTER_META = {
+        royal: { label: "Prins / Prinsessa", emoji: "👑" },
+        knight: { label: "Riddaren", emoji: "🛡️" },
+        wizard: { label: "Trollkarlen", emoji: "🧙" },
+        fairy: { label: "Älvan", emoji: "🧚" },
+        dragon: { label: "Draken", emoji: "🐲" },
+      };
+      const FALLBACK_CHARACTERS = Object.keys(CHARACTER_META);
+
+      function puppetSrcFor(characterKey) {
+        return characterKey ? `svg-players/${characterKey}.svg` : null;
+      }
+
+      function characterLabel(key) {
+        if (CHARACTER_META[key]) return CHARACTER_META[key].label;
+        return key.charAt(0).toUpperCase() + key.slice(1).replace(/[-_]/g, " ");
+      }
+      function characterEmoji(key) {
+        return CHARACTER_META[key] ? CHARACTER_META[key].emoji : "🎭";
+      }
+
+      // Python http.server returnerar en HTML-lista med <a href="X.svg">-länkar
+      // när man hämtar en katalog. Vi parsar den för att lista alla tillgängliga
+      // figurer. Faller tillbaka till FALLBACK_CHARACTERS om listningen misslyckas
+      // (t.ex. om spelet serveras från en server som inte har directory listing).
+      async function discoverCharacters() {
+        try {
+          const res = await fetch("svg-players/");
+          if (!res.ok) throw new Error("fetch " + res.status);
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const anchors = doc.querySelectorAll("a[href]");
+          const keys = [];
+          anchors.forEach((a) => {
+            const href = a.getAttribute("href") || "";
+            if (!href.toLowerCase().endsWith(".svg")) return;
+            const filename = href.split("/").pop();
+            const key = filename.replace(/\.svg$/i, "");
+            if (key && !keys.includes(key)) keys.push(key);
+          });
+          return keys;
+        } catch (err) {
+          console.warn("Kunde inte lista svg-players/:", err);
+          return null;
+        }
+      }
+
+      function renderCharPicker(keys) {
+        const picker = document.getElementById("charPicker");
+        if (!picker) return;
+        picker.innerHTML = "";
+        keys.forEach((key) => {
+          const btn = document.createElement("button");
+          btn.className = "crayon-btn choice-chip char-chip" + (key === state.character ? " active" : "");
+          btn.dataset.char = key;
+          btn.title = characterLabel(key);
+          // Rendera figuren själv som miniatyr — ingen emoji behövs.
+          const img = document.createElement("img");
+          img.src = puppetSrcFor(key);
+          img.alt = characterLabel(key);
+          img.className = "char-thumb";
+          img.onerror = () => {
+            // Fallback till emoji om SVG saknas
+            btn.textContent = characterEmoji(key);
+          };
+          btn.appendChild(img);
+          btn.addEventListener("click", () => {
+            picker.querySelectorAll(".choice-chip").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            state.character = key;
+            loadPuppet(key);
+            sound.playPop();
+          });
+          picker.appendChild(btn);
+        });
+        // Om nuvarande state.character inte finns i listan: välj första tillgängliga
+        if (!keys.includes(state.character)) {
+          state.character = keys[0] || "royal";
+          const first = picker.querySelector(".choice-chip");
+          if (first) first.classList.add("active");
+          loadPuppet(state.character);
+        }
+      }
+
+      async function initCharacterPicker() {
+        // Visa fallback-listan direkt så startskärmen inte är tom under tiden.
+        renderCharPicker(FALLBACK_CHARACTERS);
+        const discovered = await discoverCharacters();
+        if (!discovered || discovered.length === 0) return;
+        // Sortera: kända figurer i deras definitionsordning, nya alfabetiskt sist.
+        const known = FALLBACK_CHARACTERS.filter((k) => discovered.includes(k));
+        const unknown = discovered.filter((k) => !FALLBACK_CHARACTERS.includes(k)).sort();
+        const ordered = [...known, ...unknown];
+        // Omrita bara om listan faktiskt ändrats (undviker att nollställa aktivt val).
+        const current = Array.from(document.querySelectorAll("#charPicker .choice-chip")).map(
+          (b) => b.dataset.char,
+        );
+        if (current.join(",") !== ordered.join(",")) renderCharPicker(ordered);
+      }
+
+      // SVG:n är 320×320 med fötter på y≈282. Vi placerar wrapperns (160, 282)
+      // vid spelarens (player.x, player.y) och skalar ner så att figuren blir
+      // ~95 skärmpixlar hög (matchar spelets gamla procedurella storlek).
+      const PUPPET_SCALE = 0.42;
+      const PUPPET_FEET_X = 160;
+      const PUPPET_FEET_Y = 282;
+
+      const PUPPET = {
+        ready: false,
+        currentSrc: null,
+        wrapper: null,
+        animClass: null,
+        facingLeft: false,
+        scale: 0.55, // speglas från dev-sliderns playerScale i applyDevSettings
+      };
+
+
+      async function loadPuppet(characterKey) {
+        if (!PUPPET.wrapper) PUPPET.wrapper = document.querySelector(".puppet-wrapper");
+        const src = puppetSrcFor(characterKey);
+        if (!src || !PUPPET.wrapper) {
+          PUPPET.ready = false;
+          if (PUPPET.wrapper) PUPPET.wrapper.innerHTML = "";
+          return;
+        }
+        if (PUPPET.currentSrc === src && PUPPET.ready) return;
+        PUPPET.ready = false;
+        PUPPET.currentSrc = src;
+        try {
+          const res = await fetch(src);
+          if (!res.ok) throw new Error("fetch " + res.status);
+          const text = await res.text();
+          if (PUPPET.currentSrc !== src) return; // nyare laddning hann starta
+          // Ta bort ev. XML-/DOCTYPE-prolog så det kan injiceras som HTML.
+          const clean = text
+            .replace(/<\?xml[^?]*\?>/i, "")
+            .replace(/<!DOCTYPE[^>]*>/i, "")
+            .trim();
+          PUPPET.wrapper.innerHTML = clean;
+          PUPPET.ready = true;
+          PUPPET.animClass = null; // tvinga ny klassificering nästa updatePuppet
+        } catch (err) {
+          console.warn("Kunde inte ladda puppet-SVG", src, err);
+          PUPPET.ready = false;
+          if (PUPPET.wrapper) PUPPET.wrapper.innerHTML = "";
+        }
+      }
+
+      function puppetAnimStateFor(player) {
+        if (state.mode !== "PLAYING") return "anim-idle";
+        // Bananskal: sittande fas har högst prioritet (spelaren står på marken
+        // men är "låst" i sitt-pose), därefter luftvolt bakåt under flip-fasen.
+        if (player.slipTimer > 0 && player.slipPhase === "sit") return "anim-sit";
+        if (player.slipTimer > 0 && player.slipPhase === "flip") return "anim-backflip";
+        // Volt vid dubbelhopp (framåt-snurr i luften).
+        if (player.spinAngle !== 0 && player.spinDir === 1 && !player.isGrounded) return "anim-flip";
+        if (state.inLake) return "anim-swim";
+        if (player.flyTimer > 0) return "anim-jump";
+        if (!player.isGrounded) return "anim-jump";
+        if (player.isChargingJump) return "anim-idle";
+        return "anim-run";
+      }
+
+      function updatePuppet(player) {
+        const w = PUPPET.wrapper;
+        if (!w) return;
+        if (!PUPPET.ready) {
+          w.style.visibility = "hidden";
+          return;
+        }
+        w.style.visibility = "";
+        const desiredAnim = puppetAnimStateFor(player);
+        // Simning: #character-side roterar 76° kring (165, 175) vilket ger
+        // figurens tyngdpunkt ~120 viewBox-enheter ovanför fot-ankaret. Vi
+        // skjuter wrappern nedåt proportionellt mot skalan så att huvudet
+        // precis rör vattenytan istället för att sväva ovanför den.
+        const swimDrop = desiredAnim === "anim-swim" ? 120 * PUPPET.scale : 0;
+        w.style.left = player.x - PUPPET_FEET_X + "px";
+        w.style.top = player.y - PUPPET_FEET_Y + swimDrop + "px";
+        if (desiredAnim !== PUPPET.animClass) {
+          if (PUPPET.animClass) w.classList.remove(PUPPET.animClass);
+          w.classList.add(desiredAnim);
+          PUPPET.animClass = desiredAnim;
+        }
+        // Spelet scrollar höger → figuren tittar alltid höger just nu.
+        const faceLeft = false;
+        if (faceLeft !== PUPPET.facingLeft) {
+          w.classList.toggle("facing-left", faceLeft);
+          PUPPET.facingLeft = faceLeft;
+        }
+      }
+
       function drawSprattelgubbe(player) {
         ctx.save();
         ctx.translate(player.x, player.y);
@@ -3109,8 +3780,11 @@
           ctx.restore();
         }
 
-        // Rita själva sprattelgubben i saxklippt papper med mässingsklämmor
-        drawWithPaperCutout(
+        // Rita själva sprattelgubben: DOM/CSS-puppet om tillgänglig,
+        // annars procedurell canvas-ritning.
+        if (PUPPET.ready) {
+          // Figuren ritas av CSS/SVG-wrappern utanför canvasen — gör inget här.
+        } else drawWithPaperCutout(
           (c) => {
             c.strokeStyle = "#2c2724";
             c.lineWidth = 3;
@@ -3832,20 +4506,6 @@
           p.speechTimer = 1.1;
         }
 
-        // Uppdatera Hoppa!-knappens ikon så 3-6-åringar ser direkt vad den gör (Hoppa / Dyk / Flyg)
-        const jumpBtnSpan = document.querySelector("#jumpBtn span:first-child");
-        const jumpBtnLabel = document.querySelector("#jumpBtn span:last-child");
-        if (state.inLake) {
-          jumpBtnSpan.textContent = "⬇️🌊";
-          jumpBtnLabel.textContent = "Dyk!";
-        } else if (p.flyTimer > 0) {
-          jumpBtnSpan.textContent = "🎈⬆️";
-          jumpBtnLabel.textContent = "Flyg!";
-        } else {
-          jumpBtnSpan.textContent = "⬆️";
-          jumpBtnLabel.textContent = "Hoppa!";
-        }
-
         // Godiskiosken dyker upp vid mållinjen!
         if (state.worldDistance >= state.levelLength && !state.candyKiosk) {
           state.candyKiosk = { x: width + 120 };
@@ -3966,7 +4626,7 @@
             const species = ["crow", "seagull", "parrot"][Math.floor(Math.random() * 3)];
             state.birds.push({
               x: width + 70,
-              y: groundY - 195 - Math.random() * 75,
+              y: groundY - 245 - Math.random() * 75,
               species,
               hasPooped: false,
               poopAtX: p.x + 110 + Math.random() * 140,
@@ -4093,7 +4753,7 @@
               const lostColor = ["#ff595e", "#ffd166", "#4cc9f0"][lostIdx % 3];
               p.balloons--;
               document.getElementById("balloonCount").textContent = `${p.balloons}/3`;
-              state.escapedBalloons.push({ x: p.x + 14, y: p.y - 115, color: lostColor, wobble: Math.random() * 6 });
+              state.escapedBalloons.push({ x: p.x + 14, y: p.y - 170, color: lostColor, wobble: Math.random() * 6 });
               p.speechText = "🍌🎈💨";
             } else {
               p.speechText = "🍌🔄";
@@ -4127,7 +4787,7 @@
               const lostColor = ["#ff595e", "#ffd166", "#4cc9f0"][lostIdx % 3];
               p.balloons--;
               document.getElementById("balloonCount").textContent = `${p.balloons}/3`;
-              state.escapedBalloons.push({ x: p.x + 14, y: p.y - 115, color: lostColor, wobble: Math.random() * 6 });
+              state.escapedBalloons.push({ x: p.x + 14, y: p.y - 170, color: lostColor, wobble: Math.random() * 6 });
               p.speechText = "🦀🎈💨";
             } else {
               p.speechText = crab.inWater ? "🦀⬆️🌊" : "🦀🐢";
@@ -4187,7 +4847,7 @@
           const isUnicornWorld = worldId === "unicorn";
           const roll = Math.random();
           let itemType = isCandyland ? "candy" : "star";
-          let itemY = groundY - (Math.random() < 0.45 ? 115 : 42);
+          let itemY = groundY - (Math.random() < 0.45 ? 160 : 42);
           let color =
             isCandyland || isUnicornWorld
               ? ["#ff595e", "#ff758f", "#4cc9f0", "#c77dff", "#ffd166"][Math.floor(Math.random() * 5)]
@@ -4202,7 +4862,7 @@
             itemY = groundY + 45 + Math.random() * 55;
           } else if (roll < 0.21 && p.balloons < 3) {
             itemType = "balloon";
-            itemY = groundY - 105;
+            itemY = groundY - 155;
             color = ["#ff595e", "#ffd166", "#4cc9f0"][p.balloons % 3];
           } else if (roll < 0.27 && p.skateboardTimer <= 0) {
             itemType = "skateboard";
@@ -4413,6 +5073,7 @@
 
         update(dt);
         draw();
+        updatePuppet(state.player);
         requestAnimationFrame(gameLoop);
       }
 
@@ -4421,25 +5082,10 @@
        * 8. UI-HÄNDELSER & TANGENTBORD / PEKSKÄRM
        * =========================================================================
        */
-      document.querySelectorAll("#charPicker .choice-chip").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll("#charPicker .choice-chip").forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          state.character = btn.dataset.char;
-          sound.playPop();
-        });
-      });
+      // Karaktärsväljaren byggs nu av initCharacterPicker() — klick-handlers
+      // kopplas där per knapp.
 
-      document.querySelectorAll("#colorPicker .color-dot").forEach((dot) => {
-        dot.addEventListener("click", () => {
-          document.querySelectorAll("#colorPicker .color-dot").forEach((d) => d.classList.remove("active"));
-          dot.classList.add("active");
-          state.puppetColor = dot.dataset.color;
-          sound.playPop();
-        });
-      });
-
-      document.querySelectorAll("#worldPicker .choice-chip").forEach((btn) => {
+document.querySelectorAll("#worldPicker .choice-chip").forEach((btn) => {
         btn.addEventListener("click", () => {
           document.querySelectorAll("#worldPicker .choice-chip").forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
@@ -4484,28 +5130,6 @@
         document.getElementById("startOverlay").classList.remove("hidden");
       });
 
-      const jumpBtn = document.getElementById("jumpBtn");
-      const duckBtn = document.getElementById("duckBtn");
-
-      jumpBtn.addEventListener("pointerdown", (e) => {
-        e.preventDefault();
-        startJumpPress();
-      });
-      jumpBtn.addEventListener("pointerup", (e) => {
-        e.preventDefault();
-        releaseJumpPress();
-      });
-      jumpBtn.addEventListener("pointerleave", () => releaseJumpPress());
-      duckBtn.addEventListener("pointerdown", (e) => {
-        e.preventDefault();
-        setDucking(true);
-      });
-      duckBtn.addEventListener("pointerup", (e) => {
-        e.preventDefault();
-        setDucking(false);
-      });
-      duckBtn.addEventListener("pointerleave", () => setDucking(false));
-
       window.addEventListener("keydown", (e) => {
         if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
           e.preventDefault();
@@ -4535,78 +5159,241 @@
         state.turboScroll = false;
       });
 
-      // Peka / klicka direkt på saker på skärmen (solen, moln, hundar, fåglar, ankor, krabbor) för kul feedback!
+      // Klick/tryck var som helst på canvasen = hoppa. Dessutom kul feedback
+      // om man träffar sol/moln/djur (ljud + partiklar), men hoppet triggas ändå.
       canvas.addEventListener("pointerdown", (e) => {
         sound.init();
         const rect = canvas.getBoundingClientRect();
         const tx = e.clientX - rect.left;
         const ty = e.clientY - rect.top;
 
-        // 1. Solen uppe till höger
+        // Solen uppe till höger
         const sunX = canvas.width - 110;
         const sunY = 95;
         if (Math.hypot(tx - sunX, ty - sunY) < 55) {
           state.sunSmileTimer = 1.4;
           sound.playStar();
           spawnParticles(sunX, sunY, "#ffd166", 14, false);
-          return;
         }
-
-        // 2. Molnen på himlen (släpper regndroppar & studsar!)
+        // Molnen på himlen (släpper regndroppar & studsar!)
         for (const cloud of state.clouds) {
           if (Math.hypot(tx - cloud.x, ty - cloud.y) < 48) {
             cloud.bounceTimer = 0.6;
             sound.playPop();
             spawnParticles(cloud.x, cloud.y + 16, "#4cc9f0", 12, false);
-            return;
+            break;
           }
         }
-
-        // 3. Hundar (skäller & glada stjärnor!)
+        // Hundar (skäller & glada stjärnor!)
         for (const dog of state.dogs) {
           if (Math.hypot(tx - dog.x, ty - (dog.y - 25)) < 50) {
             sound.playDogBark(dog.breed);
             spawnParticles(dog.x, dog.y - 30, "#ffd166", 10, false);
-            return;
+            break;
           }
         }
-
-        // 4. Fåglar (kvittrar & fjäderpuff!)
+        // Fåglar (kvittrar & fjäderpuff!)
         for (const bird of state.birds) {
           if (Math.hypot(tx - bird.x, ty - bird.y) < 44) {
             sound.playBirdCall(bird.species);
             spawnParticles(bird.x, bird.y, "#ffffff", 10, false);
-            return;
+            break;
           }
         }
-
-        // 6. Krabbor vid strandkanten & nere på sjöbotten (klick-klack med klorna!)
+        // Krabbor
         for (const crab of state.crabs) {
           if (Math.hypot(tx - crab.x, ty - (crab.y - 16)) < 44) {
             sound.playCrabPinch();
             spawnParticles(crab.x, crab.y - 18, "#ff595e", 10, false);
-            return;
+            break;
           }
         }
-
-        // 6b. Snälla sjöhästar i sjön (glatt pling & hjärtbubblor!)
+        // Sjöhästar
         for (const sh of state.seahorses) {
           if (Math.hypot(tx - sh.x, ty - sh.y) < 46) {
             sound.playStar();
             spawnParticles(sh.x, sh.y - 16, "#ff8fab", 12, false);
-            return;
+            break;
           }
         }
-
-        // 7. Själva sprattelgubben (glatt hopp eller prutt!)
+        // Själva sprattelgubben (glatt prutt om man klickar på honom)
         if (Math.hypot(tx - state.player.x, ty - (state.player.y - 45)) < 48) {
           sound.playFart("squeak");
           spawnParticles(state.player.x - 18, state.player.y - 32, "#80ed99", 10, false);
         }
+
+        // Alltid: starta ett hopp. Charge/super-hopp genom att hålla intryckt.
+        startJumpPress();
       });
+      canvas.addEventListener("pointerup", () => releaseJumpPress());
+      canvas.addEventListener("pointercancel", () => releaseJumpPress());
+      canvas.addEventListener("pointerleave", () => releaseJumpPress());
+
+      // =========================================================================
+      // DEV-PANEL: justera papperskant & skugga live
+      // =========================================================================
+      const DEV_DEFAULTS = {
+        worldScale: 1,
+        playerScale: 0.55,
+        playerEdge: 10,
+        objectsEdge: 4.5,
+        shadowOpacity: 0.5,
+        shadowOffsetX: -3,
+        shadowOffsetY: 0,
+        softShadowOpacity: 0.06,
+        softShadowOffsetX: 0.5,
+        softShadowOffsetY: 3.5,
+      };
+      const DEV_KEY = "sprattelPaperSettings";
+
+      function applyDevSettings(settings) {
+        try {
+          // Spelarens skala — skrivs direkt på .puppet-wrapper. Zoom appliceras
+          // separat via body-transform nedanför.
+          const wrapper = document.querySelector(".puppet-wrapper");
+          if (wrapper && settings.playerScale) {
+            wrapper.style.transform = `scale(${settings.playerScale})`;
+            PUPPET.scale = settings.playerScale;
+          }
+          // Uniform zoom av hela spelet via CSS `zoom` på <html>. Zoom är en
+          // layout-property så touch/klick-koordinater översätts automatiskt
+          // av webbläsaren (till skillnad från transform:scale, där vi hade
+          // behövt justera canvas-click-handlern).
+          const S = settings.worldScale || 1;
+          document.documentElement.style.zoom = S === 1 ? "" : String(S);
+          PAPER.playerEdge = settings.playerEdge;
+          PAPER.objectsEdge = settings.objectsEdge;
+          PAPER.shadowOpacity = settings.shadowOpacity;
+          PAPER.shadowOffsetX = settings.shadowOffsetX;
+          PAPER.shadowOffsetY = settings.shadowOffsetY;
+          PAPER.softShadowOpacity = settings.softShadowOpacity;
+          PAPER.softShadowOffsetX = settings.softShadowOffsetX;
+          PAPER.softShadowOffsetY = settings.softShadowOffsetY;
+          // Uppdatera SVG-filtret för spelaren (namespace-säkert).
+          const filter = document.getElementById("puppetPaperCutout");
+          if (filter) {
+            const morph = filter.getElementsByTagName("feMorphology")[0];
+            if (morph) morph.setAttribute("radius", settings.playerEdge);
+            const offset = filter.getElementsByTagName("feOffset")[0];
+            if (offset) {
+              offset.setAttribute("dx", settings.shadowOffsetX);
+              offset.setAttribute("dy", settings.shadowOffsetY);
+            }
+            const matrices = filter.getElementsByTagName("feColorMatrix");
+            if (matrices && matrices.length > 1) {
+              const alpha = Math.min(1, settings.shadowOpacity * 2.2);
+              matrices[1].setAttribute(
+                "values",
+                `0 0 0 0 0.231   0 0 0 0 0.2   0 0 0 0 0.18   0 0 0 ${alpha} 0`,
+              );
+            }
+          }
+        } catch (err) {
+          console.warn("applyDevSettings:", err);
+        }
+      }
+
+      function syncDevSliders(settings) {
+        Object.entries(settings).forEach(([key, value]) => {
+          const slider = document.getElementById(`dev-${key}`);
+          const label = document.getElementById(`v-dev-${key}`);
+          if (slider) slider.value = value;
+          if (label) label.textContent = String(value);
+        });
+      }
+
+      function loadDevSettings() {
+        const settings = { ...DEV_DEFAULTS };
+        try {
+          const stored = localStorage.getItem(DEV_KEY);
+          if (stored) Object.assign(settings, JSON.parse(stored));
+        } catch (e) {}
+        return settings;
+      }
+
+      function saveDevSettings(settings) {
+        try {
+          localStorage.setItem(DEV_KEY, JSON.stringify(settings));
+        } catch (e) {}
+      }
+
+      function wireDevPanel() {
+        const panel = document.getElementById("devPanel");
+        const toggleBtn = document.getElementById("devToggleBtn");
+        const resetBtn = document.getElementById("devResetBtn");
+        if (!panel || !toggleBtn) {
+          console.warn("Dev-panel saknar DOM-element", { panel, toggleBtn });
+          return;
+        }
+        // Koppla toggle-listener FÖRST så panelen öppnas även om något
+        // annat nedan skulle kasta.
+        const togglePanel = () => panel.classList.toggle("visible");
+        toggleBtn.addEventListener("click", togglePanel);
+        document.addEventListener("keydown", (e) => {
+          if ((e.key === "d" || e.key === "D") && !e.target.matches("input,textarea")) {
+            togglePanel();
+          }
+        });
+
+        const settings = loadDevSettings();
+        applyDevSettings(settings);
+        syncDevSliders(settings);
+
+        Object.keys(DEV_DEFAULTS).forEach((key) => {
+          const slider = document.getElementById(`dev-${key}`);
+          const label = document.getElementById(`v-dev-${key}`);
+          if (!slider) return;
+          slider.addEventListener("input", () => {
+            const v = parseFloat(slider.value);
+            settings[key] = v;
+            if (label) label.textContent = slider.value;
+            applyDevSettings(settings);
+            saveDevSettings(settings);
+          });
+        });
+
+        if (resetBtn) {
+          resetBtn.addEventListener("click", () => {
+            Object.assign(settings, DEV_DEFAULTS);
+            applyDevSettings(settings);
+            syncDevSliders(settings);
+            saveDevSettings(settings);
+          });
+        }
+
+        const copyBtn = document.getElementById("devCopyBtn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            // Formatera som ett JS-objekt klart att klistra in i DEV_DEFAULTS.
+            const lines = Object.keys(DEV_DEFAULTS).map(
+              (key) => `  ${key}: ${settings[key]},`,
+            );
+            const text = `const DEV_DEFAULTS = {\n${lines.join("\n")}\n};`;
+            try {
+              await navigator.clipboard.writeText(text);
+              copyBtn.textContent = "✓ Kopierat!";
+              copyBtn.classList.add("copied");
+              setTimeout(() => {
+                copyBtn.textContent = "📋 Kopiera inställningar";
+                copyBtn.classList.remove("copied");
+              }, 1600);
+            } catch (err) {
+              // Fallback: visa värdena i en prompt så användaren kan kopiera manuellt.
+              window.prompt("Kopiera inställningarna manuellt:", text);
+            }
+          });
+        }
+      }
+
+      // Koppla dev-panelen direkt — skriptet ligger i slutet av body så DOM
+      // är redan parsat, och vi vill inte att ett asynkront fel i window.onload
+      // ska hindra toggle-knappen från att fungera.
+      wireDevPanel();
 
       window.onload = () => {
         initCloudsAndProps();
+        initCharacterPicker();
+        loadPuppet(state.character);
         requestAnimationFrame(gameLoop);
       };
     </script>

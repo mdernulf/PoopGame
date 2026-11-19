@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320"><g id="character-front">
+                <g id="front-torso-group">
+
+                  <!-- 1. SVANS / MANTEL bakom kroppen -->
+                  
+
+                  <!-- 2. VÄNSTER BEN – höftled (143, 208) -->
+                  <g id="front-legLeft">
+                    <path class="part-body" d="M 130 208 C 130 194, 156 194, 156 208 L 155 268 C 155 278, 149 282, 141 282 C 132 282, 127 277, 128 267 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 130 208 C 130 195, 156 195, 156 208 L 156 238 L 129 238 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="141" cy="272" rx="9" ry="6" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 3. HÖGER BEN – höftled (177, 208) -->
+                  <g id="front-legRight">
+                    <path class="part-body" d="M 164 208 C 164 194, 190 194, 190 208 L 192 267 C 193 277, 188 282, 179 282 C 171 282, 165 278, 165 268 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 164 208 C 164 195, 190 195, 190 208 L 191 238 L 164 238 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="179" cy="272" rx="9" ry="6" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 4. VÄNSTER ARM – axelled (128, 150) -->
+                  <g id="front-armLeft">
+                    <path class="part-body" d="M 128 137 C 141 137, 142 156, 134 167 L 116 198 C 110 207, 98 205, 95 196 C 92 188, 97 177, 113 149 C 118 140, 122 137, 128 137 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="105" cy="194" r="6" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 5. HÖGER ARM – axelled (192, 150) -->
+                  <g id="front-armRight">
+                    <path class="part-body" d="M 192 137 C 179 137, 178 156, 186 167 L 204 198 C 210 207, 222 205, 225 196 C 228 188, 223 177, 207 149 C 202 140, 198 137, 192 137 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="215" cy="194" r="6" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 6. BÅL framifrån -->
+                  <g id="front-torso">
+                    <path class="part-body" d="M 134 134 C 146 125, 174 125, 186 134 C 199 148, 202 184, 193 206 C 184 220, 136 220, 127 206 C 118 184, 121 148, 134 134 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="160" cy="176" rx="22" ry="24" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 124 172 L 138 172 L 140 156 L 180 156 L 182 172 L 196 172 C 199 188, 196 202, 191 210 C 182 221, 138 221, 129 210 C 124 202, 121 188, 124 172 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 138 131 L 148 130 L 151 160 L 140 160 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 172 130 L 182 131 L 180 160 L 169 160 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 148 175 L 172 175 L 170 193 C 166 198, 154 198, 150 193 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="145" cy="159" r="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="175" cy="159" r="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+
+                  <!-- 7. HUVUD framifrån – nackled (160, 130) -->
+                  <g id="front-head">
+                    <circle class="part-body" cx="123" cy="56" r="16" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="123" cy="57" r="9" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle class="part-body" cx="197" cy="56" r="16" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="197" cy="57" r="9" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse class="part-body" cx="160" cy="88" rx="46" ry="42" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="160" cy="102" rx="22" ry="16" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="131" cy="99" rx="8" ry="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="189" cy="99" rx="8" ry="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="143" cy="86" r="6.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="143.5" cy="86" r="4.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="145.2" cy="84" r="1.8" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="177" cy="86" r="6.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="176.5" cy="86" r="4.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="178.2" cy="84" r="1.8" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="160" cy="95" rx="7.5" ry="5.2" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="158" cy="93.5" rx="2.2" ry="1.2" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 151 105 Q 160 113, 169 105" stroke-linecap="round" fill="none" stroke="#222222" stroke-width="1.5" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                </g>
+              </g><g id="character-side" transform="translate(320, 0)">
+                <g id="side-torso-group">
+
+                  <!-- 1. SVANS / MANTEL (#side-tailOrCape) -->
+                  <g id="side-tailOrCape">
+                    <circle class="part-body" cx="127" cy="196" r="11" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+
+                  <!-- 2. BAKRE BEN (#side-legBack) – höftled (162, 208) -->
+                  <g id="side-legBack">
+                    <path class="part-body" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 3. BAKRE ARM (#side-armBack) – axelled (164, 148) -->
+                  <g id="side-armBack">
+                    <path class="part-body" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 4. BÅL (#side-torso) -->
+                  <g id="side-torso">
+                    <path class="part-body" d="M 142 132 C 153 125, 177 126, 189 138 C 199 152, 200 184, 191 205 C 183 219, 151 220, 137 209 C 128 194, 130 154, 142 132 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 132 175 L 159 175 L 162 155 L 193 157 C 199 176, 198 196, 189 209 C 178 220, 149 220, 137 209 C 131 199, 130 186, 132 175 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 150 131 L 162 130 L 180 159 L 168 162 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 168 175 L 187 176 L 186 192 L 176 197 L 167 191 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="173" cy="159" r="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+
+                  <!-- 5. HUVUD (#side-head) – nackled (165, 130) -->
+                  <g id="side-head">
+                    <circle class="part-body" cx="180" cy="59" r="14" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-body" d="M 138 64 C 152 46, 184 48, 200 66 C 207 75, 210 85, 222 91 C 230 96, 228 112, 217 117 C 204 124, 190 130, 172 132 C 148 134, 128 118, 126 95 C 125 81, 130 71, 138 64 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="209" cy="103" rx="15" ry="12" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="221" cy="95" rx="6.5" ry="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="184" cy="102" rx="8" ry="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 216 109 Q 207 115, 199 109" stroke-linecap="round" fill="none" stroke="#222222" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="188" cy="87" r="6.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="189.5" cy="87" r="4.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="191.2" cy="85" r="1.8" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle class="part-body" cx="151" cy="59" r="15" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="152" cy="60" r="8.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 6. FRÄMRE BEN (#side-legFront) – höftled (162, 208) -->
+                  <g id="side-legFront">
+                    <path class="part-body" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="part-clothes" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="181" cy="274" rx="7.5" ry="5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                  <!-- 7. FRÄMRE ARM (#side-armFront) – axelled (164, 148) -->
+                  <g id="side-armFront">
+                    <path class="part-body" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="171" cy="195" r="5.5" fill="none" stroke="#222222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                  </g>
+
+                </g>
+              </g></svg>

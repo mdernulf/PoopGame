@@ -1,0 +1,227 @@
+<svg id="puppet-svg" viewBox="0 0 320 320" role="img" aria-label="Pappersklippt sprattelgubbe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style>.back-limb-shade { filter: brightness(0.88); } #character-side { display: none; }</style>
+            <defs>
+              <!-- ===============================================
+                   PAPPERSKLIPP- & SKUGGFILTER
+                   (Mild ojämnhet så ansikten förblir söta och tydliga)
+                   =============================================== -->
+              <filter id="paper-layer-shadow" x="-25%" y="-25%" width="155%" height="155%">
+                <feTurbulence id="cut-turb" type="fractalNoise" baseFrequency="0.055" numOctaves="2" seed="7" result="cutNoise"/>
+                <feDisplacementMap id="cut-disp" in="SourceGraphic" in2="cutNoise" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="roughCut"/>
+                <feDropShadow id="layer-drop-shadow" in="roughCut" dx="4" dy="5" stdDeviation="1.2" flood-color="#291c12" flood-opacity="0.34"/>
+              </filter>
+
+              <filter id="paper-back-shadow" x="-25%" y="-25%" width="155%" height="155%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="2" seed="11" result="cutNoise"/>
+                <feDisplacementMap id="cut-disp-back" in="SourceGraphic" in2="cutNoise" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="roughCut"/>
+                <feDropShadow id="back-drop-shadow" in="roughCut" dx="3" dy="4" stdDeviation="1.1" flood-color="#291c12" flood-opacity="0.28"/>
+              </filter>
+
+              <filter id="decor-paper-shadow" x="-20%" y="-20%" width="145%" height="145%">
+                <feDropShadow dx="3" dy="4" stdDeviation="1.1" flood-color="#2b1e14" flood-opacity="0.22"/>
+              </filter>
+
+              <!-- ===============================================
+                   NEUTRALA MATERIAL-TEXTURER (BEVARAR FIGURETS FÄRG)
+                   =============================================== -->
+              <!-- 1. TJOCKT PAPPER / KARTONG -->
+              <pattern id="tex-paper" width="44" height="44" patternUnits="userSpaceOnUse">
+                <rect width="44" height="44" fill="#f7f4ee"/>
+                <path d="M0 9 L44 11 M0 27 L44 25 M12 0 L10 44" stroke="#c8beaf" stroke-width="1" opacity="0.55"/>
+                <circle cx="8" cy="14" r="1.1" fill="#ffffff" opacity="0.8"/>
+                <circle cx="29" cy="7" r="1.2" fill="#9e9282" opacity="0.5"/>
+                <circle cx="37" cy="31" r="1.0" fill="#ffffff" opacity="0.7"/>
+                <circle cx="17" cy="36" r="1.2" fill="#8f8373" opacity="0.45"/>
+              </pattern>
+
+              <!-- 2. TYG / FILT -->
+              
+
+              <!-- 3. GARN / STICKAT -->
+              
+
+              <!-- 4. LERA -->
+              
+
+              <!-- 5. SAND / GRUS -->
+              
+
+              <!-- 6. EGNA UPPLADDADE FOTON -->
+              
+              
+            </defs>
+
+            <!-- ===============================================
+                 PAPPERSKLIPPT BAKGRUNDSMILJÖ (LAND)
+                 =============================================== -->
+            
+
+            <!-- ===============================================
+                 PAPPERSKLIPPT VATTEN (BAKOM FIGUREN VID SIMNING)
+                 =============================================== -->
+            
+
+            <!-- Skarp pappersskugga på marken -->
+            
+
+            <!-- ===============================================
+                 SPEGELVÄNDNINGSGRUPP (#flip-wrapper)
+                 =============================================== -->
+            <g id="flip-wrapper">
+
+              <!-- Pappersklippta dammoln bakom fötterna vid springning -->
+              
+
+              <!-- =============================================
+                   VY 1: FRAMIFRÅN (#character-front) – VÄND MOT SPELAREN
+                   Visas automatiskt i Stå-läget (idle)
+                   ============================================= -->
+              <g id="character-front">
+                <g id="front-torso-group">
+
+                  <!-- 1. SVANS / MANTEL bakom kroppen -->
+                  <g id="front-tailOrCape" filter="url(#paper-back-shadow)">
+                    <g id="part-front-tailOrCape"/>
+                  </g>
+
+                  <!-- 2. VÄNSTER BEN – höftled (143, 208) -->
+                  <g id="front-legLeft" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-legLeft"><path class="part-body cut-edge" fill="#d49159" d="M 130 208 C 130 194, 156 194, 156 208 L 155 268 C 155 278, 149 282, 141 282 C 132 282, 127 277, 128 267 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 130 208 C 130 194, 156 194, 156 208 L 155 268 C 155 278, 149 282, 141 282 C 132 282, 127 277, 128 267 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 130 208 C 130 195, 156 195, 156 208 L 156 238 L 129 238 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 130 208 C 130 195, 156 195, 156 208 L 156 238 L 129 238 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="141" cy="272" rx="9" ry="6" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 3. HÖGER BEN – höftled (177, 208) -->
+                  <g id="front-legRight" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-legRight"><path class="part-body cut-edge" fill="#d49159" d="M 164 208 C 164 194, 190 194, 190 208 L 192 267 C 193 277, 188 282, 179 282 C 171 282, 165 278, 165 268 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 164 208 C 164 194, 190 194, 190 208 L 192 267 C 193 277, 188 282, 179 282 C 171 282, 165 278, 165 268 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 164 208 C 164 195, 190 195, 190 208 L 191 238 L 164 238 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 164 208 C 164 195, 190 195, 190 208 L 191 238 L 164 238 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="179" cy="272" rx="9" ry="6" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 4. VÄNSTER ARM – axelled (128, 150) -->
+                  <g id="front-armLeft" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-armLeft"><path class="part-body cut-edge" fill="#d49159" d="M 128 137 C 141 137, 142 156, 134 167 L 116 198 C 110 207, 98 205, 95 196 C 92 188, 97 177, 113 149 C 118 140, 122 137, 128 137 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 128 137 C 141 137, 142 156, 134 167 L 116 198 C 110 207, 98 205, 95 196 C 92 188, 97 177, 113 149 C 118 140, 122 137, 128 137 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="105" cy="194" r="6" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 5. HÖGER ARM – axelled (192, 150) -->
+                  <g id="front-armRight" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-armRight"><path class="part-body cut-edge" fill="#d49159" d="M 192 137 C 179 137, 178 156, 186 167 L 204 198 C 210 207, 222 205, 225 196 C 228 188, 223 177, 207 149 C 202 140, 198 137, 192 137 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 192 137 C 179 137, 178 156, 186 167 L 204 198 C 210 207, 222 205, 225 196 C 228 188, 223 177, 207 149 C 202 140, 198 137, 192 137 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="215" cy="194" r="6" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 6. BÅL framifrån -->
+                  <g id="front-torso" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-torso"><path class="part-body cut-edge" fill="#d49159" d="M 134 134 C 146 125, 174 125, 186 134 C 199 148, 202 184, 193 206 C 184 220, 136 220, 127 206 C 118 184, 121 148, 134 134 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 134 134 C 146 125, 174 125, 186 134 C 199 148, 202 184, 193 206 C 184 220, 136 220, 127 206 C 118 184, 121 148, 134 134 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="160" cy="176" rx="22" ry="24" fill="#f7e2c8" opacity="0.85"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 124 172 L 138 172 L 140 156 L 180 156 L 182 172 L 196 172 C 199 188, 196 202, 191 210 C 182 221, 138 221, 129 210 C 124 202, 121 188, 124 172 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 124 172 L 138 172 L 140 156 L 180 156 L 182 172 L 196 172 C 199 188, 196 202, 191 210 C 182 221, 138 221, 129 210 C 124 202, 121 188, 124 172 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 138 131 L 148 130 L 151 160 L 140 160 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 138 131 L 148 130 L 151 160 L 140 160 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 172 130 L 182 131 L 180 160 L 169 160 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 172 130 L 182 131 L 180 160 L 169 160 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#43739e" d="M 148 175 L 172 175 L 170 193 C 166 198, 154 198, 150 193 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 148 175 L 172 175 L 170 193 C 166 198, 154 198, 150 193 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="145" cy="159" r="5" fill="#f7c852" stroke="#faf3e4" stroke-width="1.4"/>
+            <circle cx="175" cy="159" r="5" fill="#f7c852" stroke="#faf3e4" stroke-width="1.4"/></g>
+                  </g>
+
+                  <!-- 7. HUVUD framifrån – nackled (160, 130) -->
+                  <g id="front-head" filter="url(#paper-layer-shadow)">
+                    <g id="part-front-head"><circle class="part-body cut-edge" cx="123" cy="56" r="16" fill="#d49159" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><circle class="tex-overlay-body" cx="123" cy="56" r="16" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="123" cy="57" r="9" fill="#f7e2c8"/>
+            <circle class="part-body cut-edge" cx="197" cy="56" r="16" fill="#d49159" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><circle class="tex-overlay-body" cx="197" cy="56" r="16" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="197" cy="57" r="9" fill="#f7e2c8"/>
+            <ellipse class="part-body cut-edge" cx="160" cy="88" rx="46" ry="42" fill="#d49159" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><ellipse class="tex-overlay-body" cx="160" cy="88" rx="46" ry="42" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="160" cy="102" rx="22" ry="16" fill="#f7e2c8"/>
+            <ellipse cx="131" cy="99" rx="8" ry="5" fill="#f4978e" opacity="0.58"/>
+            <ellipse cx="189" cy="99" rx="8" ry="5" fill="#f4978e" opacity="0.58"/>
+            <circle cx="143" cy="86" r="6.5" fill="#ffffff"/>
+            <circle cx="143.5" cy="86" r="4.5" fill="#2d1c12"/>
+            <circle cx="145.2" cy="84" r="1.8" fill="#ffffff"/>
+            <circle cx="177" cy="86" r="6.5" fill="#ffffff"/>
+            <circle cx="176.5" cy="86" r="4.5" fill="#2d1c12"/>
+            <circle cx="178.2" cy="84" r="1.8" fill="#ffffff"/>
+            <ellipse cx="160" cy="95" rx="7.5" ry="5.2" fill="#3c2416"/>
+            <ellipse cx="158" cy="93.5" rx="2.2" ry="1.2" fill="#ffffff" opacity="0.5"/>
+            <path d="M 151 105 Q 160 113, 169 105" fill="none" stroke="#3c2416" stroke-width="2.6" stroke-linecap="round"/></g>
+                    
+                  </g>
+
+                </g>
+              </g>
+
+              <!-- =============================================
+                   VY 2: SIDOPROFIL (#character-side) – VÄND ÅT HÖGER
+                   Visas vid Springa, Hoppa och Simma
+                   ============================================= -->
+              <g id="character-side">
+                <g id="side-torso-group">
+
+                  <!-- 1. SVANS / MANTEL (#side-tailOrCape) -->
+                  <g id="side-tailOrCape" filter="url(#paper-back-shadow)">
+                    <g id="part-side-tailOrCape"><circle class="part-body cut-edge" cx="127" cy="196" r="11" fill="#d49159" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><circle class="tex-overlay-body" cx="127" cy="196" r="11" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/></g>
+                  </g>
+
+                  <!-- 2. BAKRE BEN (#side-legBack) – höftled (162, 208) -->
+                  <g id="side-legBack" filter="url(#paper-back-shadow)">
+                    <g id="part-side-legBack" class="back-limb-shade"><path class="part-body cut-edge" fill="#d49159" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/></g>
+                    
+                  </g>
+
+                  <!-- 3. BAKRE ARM (#side-armBack) – axelled (164, 148) -->
+                  <g id="side-armBack" filter="url(#paper-back-shadow)">
+                    <g id="part-side-armBack" class="back-limb-shade"><path class="part-body cut-edge" fill="#d49159" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/></g>
+                    
+                  </g>
+
+                  <!-- 4. BÅL (#side-torso) -->
+                  <g id="side-torso" filter="url(#paper-layer-shadow)">
+                    <g id="part-side-torso"><path class="part-body cut-edge" fill="#d49159" d="M 142 132 C 153 125, 177 126, 189 138 C 199 152, 200 184, 191 205 C 183 219, 151 220, 137 209 C 128 194, 130 154, 142 132 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 142 132 C 153 125, 177 126, 189 138 C 199 152, 200 184, 191 205 C 183 219, 151 220, 137 209 C 128 194, 130 154, 142 132 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 132 175 L 159 175 L 162 155 L 193 157 C 199 176, 198 196, 189 209 C 178 220, 149 220, 137 209 C 131 199, 130 186, 132 175 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 132 175 L 159 175 L 162 155 L 193 157 C 199 176, 198 196, 189 209 C 178 220, 149 220, 137 209 C 131 199, 130 186, 132 175 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 150 131 L 162 130 L 180 159 L 168 162 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 150 131 L 162 130 L 180 159 L 168 162 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#43739e" d="M 168 175 L 187 176 L 186 192 L 176 197 L 167 191 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 168 175 L 187 176 L 186 192 L 176 197 L 167 191 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="173" cy="159" r="5" fill="#f7c852" stroke="#faf3e4" stroke-width="1.4"/></g>
+                  </g>
+
+                  <!-- 5. HUVUD (#side-head) – nackled (165, 130) -->
+                  <g id="side-head" filter="url(#paper-layer-shadow)">
+                    <g id="part-side-head"><circle class="part-body cut-edge" cx="180" cy="59" r="14" fill="#bd7d48" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><circle class="tex-overlay-body" cx="180" cy="59" r="14" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-body cut-edge" fill="#d49159" d="M 138 64 C 152 46, 184 48, 200 66 C 207 75, 210 85, 222 91 C 230 96, 228 112, 217 117 C 204 124, 190 130, 172 132 C 148 134, 128 118, 126 95 C 125 81, 130 71, 138 64 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 138 64 C 152 46, 184 48, 200 66 C 207 75, 210 85, 222 91 C 230 96, 228 112, 217 117 C 204 124, 190 130, 172 132 C 148 134, 128 118, 126 95 C 125 81, 130 71, 138 64 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="209" cy="103" rx="15" ry="12" fill="#f7e2c8"/>
+            <ellipse cx="221" cy="95" rx="6.5" ry="5" fill="#3c2416"/>
+            <ellipse cx="184" cy="102" rx="8" ry="5" fill="#f4978e" opacity="0.58"/>
+            <path d="M 216 109 Q 207 115, 199 109" fill="none" stroke="#3c2416" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="188" cy="87" r="6.5" fill="#ffffff"/>
+            <circle cx="189.5" cy="87" r="4.5" fill="#2d1c12"/>
+            <circle cx="191.2" cy="85" r="1.8" fill="#ffffff"/>
+            <circle class="part-body cut-edge" cx="151" cy="59" r="15" fill="#d49159" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><circle class="tex-overlay-body" cx="151" cy="59" r="15" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="152" cy="60" r="8.5" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 6. FRÄMRE BEN (#side-legFront) – höftled (162, 208) -->
+                  <g id="side-legFront" filter="url(#paper-layer-shadow)">
+                    <g id="part-side-legFront"><path class="part-body cut-edge" fill="#d49159" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 149 208 C 149 194, 175 194, 175 208 L 174 260 L 189 266 C 194 270, 193 280, 184 282 L 153 282 C 147 280, 147 271, 149 260 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <path class="part-clothes cut-edge" fill="#5389b8" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-clothes" d="M 149 208 C 149 195, 175 195, 175 208 L 175 236 L 148 235 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <ellipse cx="181" cy="274" rx="7.5" ry="5" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                  <!-- 7. FRÄMRE ARM (#side-armFront) – axelled (164, 148) -->
+                  <g id="side-armFront" filter="url(#paper-layer-shadow)">
+                    <g id="part-side-armFront"><path class="part-body cut-edge" fill="#d49159" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" stroke="#faf3e4" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path class="tex-overlay-body" d="M 152 148 C 152 135, 176 136, 176 150 L 182 191 C 183 201, 173 207, 164 204 C 157 201, 154 191, 152 174 Z" fill="url(#tex-paper)" opacity="0.55" style="mix-blend-mode: multiply; pointer-events: none;"/>
+            <circle cx="171" cy="195" r="5.5" fill="#f7e2c8"/></g>
+                    
+                  </g>
+
+                </g>
+              </g>
+
+              <!-- Pappersklippta bubblor vid simning -->
+              
+            </g>
+
+            <!-- Främre pappersklippt våg (överlappar figuren lätt vid simning) -->
+            
+          </svg>

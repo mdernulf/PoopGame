@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <!--
+    STANDARD SPELKARAKTÄR (Prins/Prinsessa).
+    Följer spelets rigg-spec: game-character-spec.md
+    - viewBox 0 0 320 320
+    - Allt inuti #flip-wrapper (kan speglas med scaleX(-1) runt 160,160)
+    - Två vyer: #character-front och #character-side
+    - Fasta grupp-IDn och ledpunkter för leder
+  -->
+  <g id="flip-wrapper" style="transform-box: view-box; transform-origin: 160px 160px">
+
+    <!-- FRAMIFRÅN (visas när figuren står stilla) -->
+    <g id="character-front">
+      <g id="front-torso-group" style="transform-box: view-box; transform-origin: 160px 175px">
+
+        <!-- Bakre ben – höftled (143, 208) -->
+        <g id="front-legLeft" style="transform-box: view-box; transform-origin: 143px 208px">
+          <rect class="part-pants" x="128" y="208" width="30" height="60" rx="12.5" ry="12.5"
+                fill="#3d405b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <rect class="part-shoes" x="130.5" y="258" width="42.5" height="22.5" rx="10" ry="10"
+                fill="#ff595e" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Främre ben – höftled (177, 208) -->
+        <g id="front-legRight" style="transform-box: view-box; transform-origin: 177px 208px">
+          <rect class="part-pants" x="162" y="208" width="30" height="60" rx="12.5" ry="12.5"
+                fill="#3d405b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <rect class="part-shoes" x="164.5" y="258" width="42.5" height="22.5" rx="10" ry="10"
+                fill="#ff595e" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Bakre arm – axelled (128, 150) -->
+        <g id="front-armLeft" style="transform-box: view-box; transform-origin: 128px 150px">
+          <rect class="part-body" x="115.5" y="150" width="25" height="65" rx="12.5" ry="12.5"
+                fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Främre arm – axelled (192, 150) -->
+        <g id="front-armRight" style="transform-box: view-box; transform-origin: 192px 150px">
+          <rect class="part-body" x="179.5" y="150" width="25" height="65" rx="12.5" ry="12.5"
+                fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Svans/mantel (tom för standardkaraktären) -->
+        <g id="front-tailOrCape" style="transform-box: view-box; transform-origin: 160px 180px"></g>
+
+        <!-- Bål – (ingen rotation, men gruppen behövs för kompatibilitet) -->
+        <g id="front-torso">
+          <rect class="part-clothes" x="122.5" y="130" width="75" height="90" rx="25" ry="25"
+                fill="#ff6b6b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Mässingsklämmor i axel- och höftleden -->
+          <circle cx="160" cy="145" r="10.5" fill="#f4a261" stroke="#2c2724" stroke-width="1.5" />
+          <circle cx="157.5" cy="142.5" r="4" fill="#fff3b0" stroke="none" />
+          <circle cx="160" cy="215" r="10.5" fill="#f4a261" stroke="#2c2724" stroke-width="1.5" />
+          <circle cx="157.5" cy="212.5" r="4" fill="#fff3b0" stroke="none" />
+        </g>
+
+        <!-- Huvud – nackled (160, 130) -->
+        <g id="front-head" style="transform-box: view-box; transform-origin: 160px 130px">
+          <circle class="part-body" cx="160" cy="95" r="40"
+                  fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" />
+          <circle class="part-cheeks" cx="140" cy="107" r="8" fill="#ff758f" />
+          <circle class="part-cheeks" cx="180" cy="107" r="8" fill="#ff758f" />
+          <circle cx="148" cy="90" r="5.5" fill="#2c2724" />
+          <circle cx="172" cy="90" r="5.5" fill="#2c2724" />
+          <circle cx="149.5" cy="88" r="2" fill="#ffffff" />
+          <circle cx="173.5" cy="88" r="2" fill="#ffffff" />
+          <path d="M 148 105 Q 160 117 172 105"
+                fill="none" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+
+      </g>
+    </g>
+
+    <!-- SIDOVY (visas när figuren springer/hoppar/simmar) -->
+    <g id="character-side">
+      <g id="side-torso-group" style="transform-box: view-box; transform-origin: 165px 175px">
+
+        <!-- Svans/mantel bakom -->
+        <g id="side-tailOrCape" style="transform-box: view-box; transform-origin: 140px 180px"></g>
+
+        <!-- Bakre ben – höftled (162, 208) -->
+        <g id="side-legBack" style="transform-box: view-box; transform-origin: 162px 208px">
+          <rect class="part-pants" x="147" y="208" width="30" height="60" rx="12.5" ry="12.5"
+                fill="#3d405b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <rect class="part-shoes" x="149.5" y="258" width="42.5" height="22.5" rx="10" ry="10"
+                fill="#ff595e" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Bakre arm – axelled (164, 148) -->
+        <g id="side-armBack" style="transform-box: view-box; transform-origin: 164px 148px">
+          <rect class="part-body" x="151.5" y="148" width="25" height="65" rx="12.5" ry="12.5"
+                fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Bål -->
+        <g id="side-torso">
+          <rect class="part-clothes" x="132" y="130" width="64" height="90" rx="25" ry="25"
+                fill="#ff6b6b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="164" cy="145" r="10.5" fill="#f4a261" stroke="#2c2724" stroke-width="1.5" />
+          <circle cx="161.5" cy="142.5" r="4" fill="#fff3b0" stroke="none" />
+          <circle cx="164" cy="215" r="10.5" fill="#f4a261" stroke="#2c2724" stroke-width="1.5" />
+          <circle cx="161.5" cy="212.5" r="4" fill="#fff3b0" stroke="none" />
+        </g>
+
+        <!-- Huvud – nackled (165, 130), ansikte åt höger -->
+        <g id="side-head" style="transform-box: view-box; transform-origin: 165px 130px">
+          <circle class="part-body" cx="165" cy="95" r="40"
+                  fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" />
+          <circle class="part-cheeks" cx="191" cy="107" r="8" fill="#ff758f" />
+          <circle cx="184" cy="90" r="5.5" fill="#2c2724" />
+          <circle cx="185.5" cy="88" r="2" fill="#ffffff" />
+          <path d="M 177 105 Q 187 112 195 105"
+                fill="none" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+
+        <!-- Främre ben – höftled (162, 208) -->
+        <g id="side-legFront" style="transform-box: view-box; transform-origin: 162px 208px">
+          <rect class="part-pants" x="147" y="208" width="30" height="60" rx="12.5" ry="12.5"
+                fill="#3d405b" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <rect class="part-shoes" x="149.5" y="258" width="42.5" height="22.5" rx="10" ry="10"
+                fill="#ff595e" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Främre arm – axelled (164, 148) -->
+        <g id="side-armFront" style="transform-box: view-box; transform-origin: 164px 148px">
+          <rect class="part-body" x="151.5" y="148" width="25" height="65" rx="12.5" ry="12.5"
+                fill="#ffe5d9" stroke="#2c2724" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+      </g>
+    </g>
+
+  </g>
+</svg>
