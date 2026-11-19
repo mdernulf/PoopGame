@@ -4886,13 +4886,15 @@
             itemType = "balloon";
             itemY = groundY - 155;
             color = ["#ff595e", "#ffd166", "#4cc9f0"][p.balloons % 3];
-          } else if (roll < 0.27 && p.skateboardTimer <= 0) {
+          } else if (roll < 0.36 && p.skateboardTimer <= 0) {
+            // Skateboard-bandet utökat (var 0.21–0.27 = 6 %) → nu 0.21–0.36 = 15 %
+            // för att den ska dyka upp märkbart under en bana istället för nästan aldrig.
             itemType = "skateboard";
             itemY = groundY - 36;
-          } else if (roll < 0.3 && p.umbrellaTimer <= 0) {
+          } else if (roll < 0.42 && p.umbrellaTimer <= 0) {
             itemType = "umbrella";
             itemY = groundY - 95;
-          } else if (roll < 0.35 && p.rainbowFartTimer <= 0) {
+          } else if (roll < 0.48 && p.rainbowFartTimer <= 0) {
             itemType = "apple";
             itemY = groundY - 46;
           }
