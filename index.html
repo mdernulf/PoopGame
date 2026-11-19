@@ -1690,6 +1690,7 @@
        * 4. RITFUNKTIONER FÖR BANANSKAL, BADANKA, BALLONGER, SKATEBOARD, PARAPLY & BAJS
        * =========================================================================
        */
+      // === BANANAS: draw ===
       function drawBananaPeel(peel) {
         ctx.save();
         ctx.translate(peel.x, peel.y);
@@ -1783,6 +1784,7 @@
         ctx.restore();
       }
 
+      // === CRABS: draw ===
       function drawCrab(crab) {
         ctx.save();
         ctx.translate(crab.x, crab.y);
@@ -1869,6 +1871,7 @@
         ctx.restore();
       }
 
+      // === SEAHORSES: draw ===
       function drawSeahorse(seahorse) {
         ctx.save();
         const bobY = Math.sin(state.wobbleTime * 3.8 + seahorse.x * 0.03) * 8;
@@ -1973,6 +1976,7 @@
         ctx.restore();
       }
 
+      // === DUCKS: draw ===
       function drawRubberDuck(duck) {
         ctx.save();
         const bobY = Math.sin(state.wobbleTime * 6 + duck.x * 0.04) * 4;
@@ -2045,6 +2049,7 @@
         ctx.restore();
       }
 
+      // === COLLECTIBLES: draw (stars / balloons / skateboard / umbrella / apple / magnet / candy) ===
       function drawCollectible(item) {
         ctx.save();
         const bobY = Math.sin(state.wobbleTime * 5 + item.x * 0.02) * 6;
@@ -2319,6 +2324,7 @@
         ctx.restore();
       }
 
+      // === POOPS: draw ===
       function drawPoop(poop) {
         ctx.save();
         ctx.translate(poop.x, poop.y);
@@ -2406,6 +2412,7 @@
         ctx.restore();
       }
 
+      // === DOGS: draw ===
       function drawDog(dog) {
         ctx.save();
         ctx.translate(dog.x, dog.y);
@@ -2543,6 +2550,7 @@
         ctx.restore();
       }
 
+      // === BIRDS: draw ===
       function drawBird(bird) {
         ctx.save();
         ctx.translate(bird.x, bird.y);
@@ -3647,6 +3655,7 @@
         }
       }
 
+      // === PLAYER: draw (SVG puppet positioning + canvas accessories like balloons, umbrella, speech bubble) ===
       function drawSprattelgubbe(player) {
         ctx.save();
         ctx.translate(player.x, player.y);
@@ -4410,6 +4419,7 @@
         const height = canvas.height;
         const groundY = getGroundY(height);
 
+        // === CLOUDS + SUN: update (sky bg movement, bounce reaction when tapped) ===
         // Moln & sol rör sig och animeras alltid mjukt i bakgrunden
         if (state.sunSmileTimer > 0) state.sunSmileTimer -= dt;
         for (const cloud of state.clouds) {
@@ -4469,6 +4479,7 @@
         const pct = Math.min(100, Math.floor((state.worldDistance / state.levelLength) * 100));
         document.getElementById("progressCount").textContent = `${pct}%`;
 
+        // === PROPS + LAKES: scroll (background decor like trees/castles, lakes slide past) ===
         // Flytta bakgrundsrekvisita & sjöar
         const world = WORLDS[state.worldIndex];
         for (const prop of state.bgElements) {
@@ -4618,6 +4629,7 @@
           p.runCycle += dt * (currentSpeed * 0.048);
         }
 
+        // === DOGS + BIRDS: spawn (via state.spawnTimer, tunat av WORLD_SPAWN_RATES) ===
         // Spawna hundar & fåglar
         const spawnOnLake = state.lakes.some((l) => width + 80 > l.x - 40 && width + 80 < l.x + l.width + 40);
         state.spawnTimer -= dt;
@@ -4645,6 +4657,7 @@
           }
           state.spawnTimer = Math.max(1.9, 3.4 - progressRatio * 0.85) + Math.random() * 1.25;
         }
+        // === BANANAS: spawn (ground peels, state.bananaTimer, never near lakes) ===
         // Spawna halkiga bananskal på marken (glesare för lugnare tempo och aldrig precis efter en sjö)
         const nearOrAfterLake = state.lakes.some((l) => width + 90 > l.x - 160 && width + 90 < l.x + l.width + 380);
         state.bananaTimer -= dt;
@@ -4663,6 +4676,7 @@
         // spelaren innan de drivits in i start-zonen och rensas bort.
         const LAKE_DUCK_PADDING = 500;
         const DUCK_SPAWN_BUFFER = 650;
+        // === DUCKS: spawn (only in lakes, controlled by state.duckTimer) ===
         state.duckTimer -= dt;
         const spawnWorldX = Math.max(width + 70, p.x + 900);
         const lakeAtSpawn = state.lakes.find(
@@ -4690,6 +4704,7 @@
           }
         }
 
+        // === DUCKS: update (float + collision) ===
         // Uppdatera badankor i sjön
         for (let i = state.rubberDucks.length - 1; i >= 0; i--) {
           const duck = state.rubberDucks[i];
@@ -4708,6 +4723,7 @@
           if (duck.x < -90) state.rubberDucks.splice(i, 1);
         }
 
+        // === SEAHORSES: update (bob in lake + greeting / star bonus) ===
         // Uppdatera snälla sjöhästar i sjön
         for (let i = state.seahorses.length - 1; i >= 0; i--) {
           const sh = state.seahorses[i];
@@ -4727,6 +4743,7 @@
           if (sh.x < -100) state.seahorses.splice(i, 1);
         }
 
+        // === BANANAS: update (slip/trip collision + despawn) ===
         // Uppdatera bananskal
         for (let i = state.bananaPeels.length - 1; i >= 0; i--) {
           const peel = state.bananaPeels[i];
@@ -4765,6 +4782,7 @@
           if (peel.x < -90) state.bananaPeels.splice(i, 1);
         }
 
+        // === CRABS: update (walk patrol + pinch collision) ===
         // Uppdatera krabborna (både på stranden före sjön och nere på sjöbotten!)
         const lakeDepth = Math.min(130, (height - groundY) * 0.72);
         for (let i = state.crabs.length - 1; i >= 0; i--) {
@@ -4799,6 +4817,7 @@
           if (crab.x < -100) state.crabs.splice(i, 1);
         }
 
+        // === ESCAPED BALLOONS: update (drift upward + despawn when above screen) ===
         // Uppdatera tappade ballonger som flyger upp i skyn
         for (let i = state.escapedBalloons.length - 1; i >= 0; i--) {
           const eb = state.escapedBalloons[i];
@@ -4808,6 +4827,7 @@
           if (eb.y < -120) state.escapedBalloons.splice(i, 1);
         }
 
+        // === DOGS: update (walk, poop drop, despawn) ===
         // Uppdatera hundar
         for (let i = state.dogs.length - 1; i >= 0; i--) {
           const dog = state.dogs[i];
@@ -4826,6 +4846,7 @@
           if (dog.x < -120) state.dogs.splice(i, 1);
         }
 
+        // === BIRDS: update (fly, poop drop, despawn) ===
         // Uppdatera fåglar
         for (let i = state.birds.length - 1; i >= 0; i--) {
           const bird = state.birds[i];
@@ -4838,6 +4859,7 @@
           if (bird.x < -100) state.birds.splice(i, 1);
         }
 
+        // === COLLECTIBLES: spawn (stars/candy, balloons, skateboard, umbrella, apple — tempo via state.starTimer) ===
         // Spawna stjärnor (eller godis i Godislandet!), ballonger, skateboard, paraply & prutt-äpplen
         state.starTimer -= dt;
         if (state.starTimer <= 0 && !state.candyKiosk) {
@@ -4885,6 +4907,7 @@
           state.starTimer = p.flyTimer > 0 ? 0.52 : 1.45 + Math.random() * 0.75;
         }
 
+        // === COLLECTIBLES: update (scroll + pickup collision) ===
         // Uppdatera insamlingsbara föremål
         for (let i = state.collectibles.length - 1; i >= 0; i--) {
           const item = state.collectibles[i];
@@ -4945,6 +4968,7 @@
           if (item.x < -70) state.collectibles.splice(i, 1);
         }
 
+        // === POOPS: update (fall, splat, hit collision) ===
         // Uppdatera bajs & kollisioner
         for (let i = state.poops.length - 1; i >= 0; i--) {
           const poop = state.poops[i];
@@ -5018,6 +5042,7 @@
           if (poop.x < -80) state.poops.splice(i, 1);
         }
 
+        // === PARTICLES: update (confetti/dust decay) ===
         // Uppdatera partiklar
         for (let i = state.particles.length - 1; i >= 0; i--) {
           const pt = state.particles[i];
