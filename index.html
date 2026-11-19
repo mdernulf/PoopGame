@@ -693,6 +693,42 @@
       }
 
       /* =========================================================
+         8. HOPPLADDNING (BUILDUP – SIDOKROPP + FRAMIFRÅN-HUVUD)
+         Figuren fortsätter springa i sidoprofil, men huvudet vänds
+         mot spelaren med en förtvivlad, skakande min.
+         ========================================================= */
+      /* Visa både vyer: sido-kroppen springer vidare, front-huvudet
+         läggs ovanpå (sido-huvudet göms så det inte blir dubbletter). */
+      .puppet-wrapper.anim-buildup #character-front { display: inline; }
+      .puppet-wrapper.anim-buildup #character-side  { display: inline; }
+
+      /* Göm ALLT i front-vyn utom huvudet — vi vill bara ha ansiktet. */
+      .puppet-wrapper.anim-buildup #front-torso-group > *:not(#front-head) { display: none; }
+
+      /* Göm sido-huvudet så front-huvudet tar dess plats. */
+      .puppet-wrapper.anim-buildup #side-head { display: none; }
+
+      /* Sido-kroppen fortsätter sin spring-cykel. */
+      .puppet-wrapper.anim-buildup #character-side    { animation: puppetRunBody 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-buildup #side-tailOrCape   { animation: puppetRunTail 0.34s ease-in-out infinite; }
+      .puppet-wrapper.anim-buildup #side-armFront     { animation: puppetRunArmF 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-buildup #side-armBack      { animation: puppetRunArmB 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-buildup #side-legFront     { animation: puppetRunLegF 0.56s ease-in-out infinite; }
+      .puppet-wrapper.anim-buildup #side-legBack      { animation: puppetRunLegB 0.56s ease-in-out infinite; }
+
+      /* Front-huvudet skakar snabbt av nervositet / förtvivlan. */
+      .puppet-wrapper.anim-buildup #front-head {
+        animation: puppetBuildupHeadShake 0.14s ease-in-out infinite;
+      }
+
+      @keyframes puppetBuildupHeadShake {
+        0%, 100% { transform: rotate(-5deg) translateY(1px); }
+        25%      { transform: rotate(6deg)  translateY(-1px); }
+        50%      { transform: rotate(-5deg) translateY(1px); }
+        75%      { transform: rotate(6deg)  translateY(-1px); }
+      }
+
+      /* =========================================================
          DEV-PANEL för papperskant & skugga
          ========================================================= */
       #devToggleBtn {
@@ -3622,7 +3658,7 @@
         if (state.inLake) return "anim-swim";
         if (player.flyTimer > 0) return "anim-jump";
         if (!player.isGrounded) return "anim-jump";
-        if (player.isChargingJump) return "anim-idle";
+        if (player.isChargingJump) return "anim-buildup";
         return "anim-run";
       }
 
