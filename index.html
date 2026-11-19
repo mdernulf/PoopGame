@@ -953,34 +953,737 @@
       </div>
     </div>
 
-    <script type="module">
-      import { sound } from "./src/audio.js";
-      import { WORLDS, MAGNET_ICONS, canvas, ctx, state } from "./src/state.js";
-      import {
-        PAPER,
-        crayonPattern,
-        createCrayonPattern,
-        drawWithPaperCutout,
-        drawHandLine,
-        fillRoundRect,
-        drawBrassFastener,
-      } from "./src/paper-cutout.js";
-      import {
-        PUPPET,
-        PUPPET_FEET_X,
-        PUPPET_FEET_Y,
-        CHARACTER_META,
-        FALLBACK_CHARACTERS,
-        loadPuppet,
-        updatePuppet,
-        initCharacterPicker,
-        puppetAnimStateFor,
-        puppetSrcFor,
-        characterLabel,
-        characterEmoji,
-      } from "./src/puppet.js";
+    <script>
+      /**
+       * =========================================================================
+       * 1. LJUDMOTOR (WEB AUDIO API – PRUTTAR, DJURLÄTEN & AMBIENS)
+       * =========================================================================
+       */
+      class CrayonSoundEngine {
+        constructor() {
+          this.ctx = null;
+          this.muted = false;
+          this.ambientTimer = null;
+          this.musicTimer = null;
+          this.musicStep = 0;
+          this.fartBuffers = { squeak: [], tuba: [], normal: [], all: [] };
+          this.fartsLoading = false;
+          this.lastFartBuffer = null;
+          this.buildupBuffer = null;
+          this.buildupSource = null;
+          this.buildupGain = null;
+          this.balloonBuffer = null;
+          this.bananaBuffer = null;
+        }
 
+        init() {
+          try {
+            if (!this.ctx) {
+              const AudioCtx = window.AudioContext || window.webkitAudioContext;
+              if (AudioCtx) this.ctx = new AudioCtx();
+            }
+            if (this.ctx && this.ctx.state === "suspended") {
+              this.ctx.resume();
+            }
+            this.loadFartSounds();
+          } catch (e) {}
+        }
 
+        loadFartSounds() {
+          if (!this.ctx || this.fartsLoading || this.fartBuffers.all.length) return;
+          this.fartsLoading = true;
+          // Short/snappy files = squeak, long files = tuba, mid = normal.
+          const files = [
+            { url: "assets/audio/Prutt A.wav", style: "squeak" },
+            { url: "assets/audio/Prutt C.wav", style: "squeak" },
+            { url: "assets/audio/Prutt D.wav", style: "tuba" },
+            { url: "assets/audio/Prutt E.wav", style: "normal" },
+            { url: "assets/audio/Prutt in stereo.wav", style: "normal" },
+          ];
+          files.forEach((f) => {
+            fetch(f.url)
+              .then((r) => r.arrayBuffer())
+              .then((buf) => new Promise((res, rej) => this.ctx.decodeAudioData(buf, res, rej)))
+              .then((audioBuf) => {
+                this.fartBuffers[f.style].push(audioBuf);
+                this.fartBuffers.all.push(audioBuf);
+              })
+              .catch(() => {});
+          });
+          const oneShots = [
+            { url: "assets/audio/buildup.wav", key: "buildupBuffer" },
+            { url: "assets/audio/Balloon.wav", key: "balloonBuffer" },
+            { url: "assets/audio/Banana.wav", key: "bananaBuffer" },
+          ];
+          oneShots.forEach((o) => {
+            fetch(o.url)
+              .then((r) => r.arrayBuffer())
+              .then((buf) => new Promise((res, rej) => this.ctx.decodeAudioData(buf, res, rej)))
+              .then((audioBuf) => {
+                this[o.key] = audioBuf;
+              })
+              .catch(() => {});
+          });
+        }
+
+        playSample(buffer, volume = 0.9) {
+          if (this.muted || !this.ctx || !buffer) return;
+          try {
+            const src = this.ctx.createBufferSource();
+            src.buffer = buffer;
+            const gain = this.ctx.createGain();
+            gain.gain.value = volume;
+            src.connect(gain);
+            gain.connect(this.ctx.destination);
+            src.start(0);
+          } catch (e) {}
+        }
+
+        playBalloon() {
+          this.init();
+          this.playSample(this.balloonBuffer, 1.6);
+        }
+
+        playBanana() {
+          this.init();
+          this.playSample(this.bananaBuffer, 3.0);
+        }
+
+        startBuildup() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx || !this.buildupBuffer || this.buildupSource) return;
+          try {
+            const src = this.ctx.createBufferSource();
+            src.buffer = this.buildupBuffer;
+            const gain = this.ctx.createGain();
+            gain.gain.value = 2.8;
+            src.connect(gain);
+            gain.connect(this.ctx.destination);
+            src.start(0);
+            this.buildupSource = src;
+            this.buildupGain = gain;
+            src.onended = () => {
+              if (this.buildupSource === src) {
+                this.buildupSource = null;
+                this.buildupGain = null;
+              }
+            };
+          } catch (e) {}
+        }
+
+        stopBuildup() {
+          if (!this.buildupSource) return;
+          try {
+            const now = this.ctx.currentTime;
+            this.buildupGain.gain.cancelScheduledValues(now);
+            this.buildupGain.gain.setValueAtTime(this.buildupGain.gain.value, now);
+            this.buildupGain.gain.linearRampToValueAtTime(0.0001, now + 0.05);
+            this.buildupSource.stop(now + 0.06);
+          } catch (e) {}
+          this.buildupSource = null;
+          this.buildupGain = null;
+        }
+
+        toggleMute() {
+          this.muted = !this.muted;
+          return this.muted;
+        }
+
+        playJump() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(240, now);
+            osc.frequency.exponentialRampToValueAtTime(580, now + 0.18);
+            gain.gain.setValueAtTime(0.14, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.2);
+          } catch (e) {}
+        }
+
+        playPop() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(420, now);
+            osc.frequency.exponentialRampToValueAtTime(860, now + 0.08);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.1);
+          } catch (e) {}
+        }
+
+        playStar() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            [587.33, 880].forEach((freq, idx) => {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+              gain.gain.setValueAtTime(0.012, now + idx * 0.07);
+              gain.gain.exponentialRampToValueAtTime(0.0005, now + idx * 0.07 + 0.12);
+              osc.connect(gain);
+              gain.connect(this.ctx.destination);
+              osc.start(now + idx * 0.07);
+              osc.stop(now + idx * 0.07 + 0.2);
+            });
+          } catch (e) {}
+        }
+
+        playOops() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.linearRampToValueAtTime(135, now + 0.28);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.31);
+          } catch (e) {}
+        }
+
+        playQuack() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(480, now);
+            osc.frequency.exponentialRampToValueAtTime(290, now + 0.16);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.19);
+          } catch (e) {}
+        }
+
+        playCrabPinch() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            [0, 0.09].forEach((offset) => {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = "square";
+              osc.frequency.setValueAtTime(760, now + offset);
+              osc.frequency.exponentialRampToValueAtTime(340, now + offset + 0.05);
+              gain.gain.setValueAtTime(0.09, now + offset);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.06);
+              osc.connect(gain);
+              gain.connect(this.ctx.destination);
+              osc.start(now + offset);
+              osc.stop(now + offset + 0.07);
+            });
+          } catch (e) {}
+        }
+
+        playFart(style = "normal") {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const pool = this.fartBuffers[style]?.length
+              ? this.fartBuffers[style]
+              : this.fartBuffers.all;
+            if (!pool.length) return;
+            let buf = pool[Math.floor(Math.random() * pool.length)];
+            if (pool.length > 1 && buf === this.lastFartBuffer) {
+              buf = pool[(pool.indexOf(buf) + 1) % pool.length];
+            }
+            this.lastFartBuffer = buf;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const gain = this.ctx.createGain();
+            gain.gain.value = 3.0;
+            src.connect(gain);
+            gain.connect(this.ctx.destination);
+            src.start(0);
+          } catch (e) {}
+        }
+
+        playDogBark(breed) {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            const base = breed === "dachshund" ? 520 : breed === "stbernard" ? 170 : 340;
+            osc.frequency.setValueAtTime(base, now);
+            osc.frequency.exponentialRampToValueAtTime(base * 0.6, now + 0.14);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.16);
+          } catch (e) {}
+        }
+
+        playBirdCall(species) {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = species === "crow" ? "sawtooth" : "sine";
+            const f1 = species === "crow" ? 380 : species === "seagull" ? 920 : 760;
+            const f2 = species === "crow" ? 280 : species === "seagull" ? 640 : 1120;
+            osc.frequency.setValueAtTime(f1, now);
+            osc.frequency.exponentialRampToValueAtTime(f2, now + 0.16);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.19);
+          } catch (e) {}
+        }
+
+        playFanfare() {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(freq, now + idx * 0.11);
+              gain.gain.setValueAtTime(0.14, now + idx * 0.11);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.11 + 0.34);
+              osc.connect(gain);
+              gain.connect(this.ctx.destination);
+              osc.start(now + idx * 0.11);
+              osc.stop(now + idx * 0.11 + 0.36);
+            });
+          } catch (e) {}
+        }
+
+        playMusicNote() {
+          if (this.muted || state.mode !== "PLAYING") return;
+          this.init();
+          if (!this.ctx) return;
+
+          try {
+            // Glad, mjuk xylofon-/speldosemelodi i C-dur som passar 3–6-åringar
+            const melody = [
+              523.25, 0, 659.25, 587.33, 523.25, 0, 392.0, 0, 440.0, 0, 523.25, 440.0, 392.0, 0, 0, 0, 523.25, 587.33, 659.25, 783.99,
+              659.25, 0, 587.33, 0, 659.25, 523.25, 587.33, 493.88, 523.25, 0, 0, 0,
+            ];
+            const bass = [
+              261.63, 0, 0, 0, 196.0, 0, 0, 0, 220.0, 0, 0, 0, 196.0, 0, 0, 0, 261.63, 0, 0, 0, 196.0, 0, 0, 0, 174.61, 0, 196.0, 0, 261.63,
+              0, 0, 0,
+            ];
+
+            const idx = this.musicStep % melody.length;
+            this.musicStep++;
+            const now = this.ctx.currentTime;
+
+            const noteFreq = melody[idx];
+            if (noteFreq > 0) {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(noteFreq, now);
+              gain.gain.setValueAtTime(0.001, now);
+              gain.gain.linearRampToValueAtTime(0.055, now + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+              osc.connect(gain);
+              gain.connect(this.ctx.destination);
+              osc.start(now);
+              osc.stop(now + 0.25);
+            }
+
+            const bassFreq = bass[idx];
+            if (bassFreq > 0) {
+              const bOsc = this.ctx.createOscillator();
+              const bGain = this.ctx.createGain();
+              bOsc.type = "triangle";
+              bOsc.frequency.setValueAtTime(bassFreq, now);
+              bGain.gain.setValueAtTime(0.001, now);
+              bGain.gain.linearRampToValueAtTime(0.045, now + 0.02);
+              bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+              bOsc.connect(bGain);
+              bGain.connect(this.ctx.destination);
+              bOsc.start(now);
+              bOsc.stop(now + 0.35);
+            }
+          } catch (e) {}
+        }
+
+        startAmbient() {
+          if (this.ambientTimer) clearInterval(this.ambientTimer);
+          if (this.musicTimer) clearInterval(this.musicTimer);
+          this.musicStep = 0;
+
+          this.musicTimer = setInterval(() => {
+            this.playMusicNote();
+          }, 260);
+
+          this.ambientTimer = setInterval(() => {
+            if (this.muted || state.mode !== "PLAYING") return;
+            if (Math.random() < 0.45) {
+              this.playBirdCall(["crow", "seagull", "parrot"][Math.floor(Math.random() * 3)]);
+            }
+          }, 4200);
+        }
+      }
+
+      const sound = new CrayonSoundEngine();
+
+      /**
+       * =========================================================================
+       * 2. VÄRLDSDATA & SPELTILLSTÅND
+       * =========================================================================
+       */
+      const WORLDS = [
+        {
+          id: "fairytale",
+          name: "Sagolandskap",
+          emoji: "🏰",
+          skyTop: "#d8f3ff",
+          skyBottom: "#fff7e6",
+          hillColor: "#b7e4c7",
+          groundColor: "#74c69d",
+          propTypes: ["castle", "mushroom", "rainbow_tree"],
+        },
+        {
+          id: "park",
+          name: "Parken",
+          emoji: "🌳",
+          skyTop: "#e0fbfc",
+          skyBottom: "#fefae0",
+          hillColor: "#a3b18a",
+          groundColor: "#588157",
+          propTypes: ["duck_pond", "park_bench", "oak_tree"],
+        },
+        {
+          id: "city",
+          name: "Staden",
+          emoji: "🏙️",
+          skyTop: "#dbe7e4",
+          skyBottom: "#f8edeb",
+          hillColor: "#adb5bd",
+          groundColor: "#6c757d",
+          propTypes: ["bakery", "apartment", "traffic_light"],
+        },
+        {
+          id: "playland",
+          name: "Leklandet",
+          emoji: "🎪",
+          skyTop: "#ffccd5",
+          skyBottom: "#fff3b0",
+          hillColor: "#ffafcc",
+          groundColor: "#4cc9f0",
+          propTypes: ["ball_pit", "slide", "blocks"],
+        },
+        {
+          id: "amusement",
+          name: "Tivolit",
+          emoji: "🎡",
+          skyTop: "#cdb4db",
+          skyBottom: "#ffe5d9",
+          hillColor: "#ffc8dd",
+          groundColor: "#f4a261",
+          propTypes: ["ferris_wheel", "circus_tent", "balloon_cart"],
+        },
+        {
+          id: "candyland",
+          name: "Godislandet",
+          emoji: "🍭",
+          skyTop: "#ffd6e7",
+          skyBottom: "#fff8e7",
+          hillColor: "#ffafcc",
+          groundColor: "#ff8fab",
+          propTypes: ["gingerbread_house", "lollipop_tree", "candy_cane"],
+        },
+        {
+          id: "unicorn",
+          name: "Magic Unicorn World",
+          emoji: "🦄",
+          skyTop: "#f3c4fb",
+          skyBottom: "#e2ece9",
+          hillColor: "#dec9e9",
+          groundColor: "#b8e0d2",
+          propTypes: ["unicorn_statue", "rainbow_arch", "crystal_castle"],
+        },
+      ];
+
+      const MAGNET_ICONS = ["🌈", "👑", "🦄", "🧁", "⭐", "🏰"];
+
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+
+      const state = {
+        mode: "START",
+        character: "royal",
+        puppetColor: "#ff6b6b",
+        worldIndex: 0,
+        levelNumber: 1,
+        fastMode: false,
+        turboScroll: false,
+        stars: 0,
+        magnets: [],
+        unicornUnlocked: false,
+        worldDistance: 0,
+        levelLength: 11500,
+        candyKiosk: null,
+        lakes: [],
+        inLake: false,
+        sunSmileTimer: 0,
+        player: {
+          x: 150,
+          y: 0,
+          vy: 0,
+          isGrounded: true,
+          jumpsLeft: 2,
+          isChargingJump: false,
+          jumpCharge: 0,
+          spinAngle: 0,
+          spinDir: 1,
+          isDucking: false,
+          runCycle: 0,
+          stumbleTimer: 0,
+          slipTimer: 0,
+          slipPhase: "none",
+          crabSlowTimer: 0,
+          rainbowFartTimer: 0,
+          skateboardTimer: 0,
+          umbrellaTimer: 0,
+          umbrellaDirt: 0,
+          balloons: 0,
+          flyTimer: 0,
+          speechText: "",
+          speechTimer: 0,
+          wingFlap: 0,
+        },
+        dogs: [],
+        birds: [],
+        poops: [],
+        bananaPeels: [],
+        crabs: [],
+        seahorses: [],
+        rubberDucks: [],
+        escapedBalloons: [],
+        collectibles: [],
+        particles: [],
+        clouds: [],
+        bgElements: [],
+        spawnTimer: 1.5,
+        bananaTimer: 4.2,
+        duckTimer: 1.6,
+        starTimer: 0.8,
+        lastTime: 0,
+        wobbleTime: 0,
+      };
+
+      /**
+       * =========================================================================
+       * 3. VAXKRIT-TEXTUR & ÄKTA SAXKLIPPT PAPPERSURKLIPP
+       * =========================================================================
+       */
+      let crayonPattern = null;
+      function createCrayonPattern() {
+        const pCanvas = document.createElement("canvas");
+        pCanvas.width = 96;
+        pCanvas.height = 96;
+        const pCtx = pCanvas.getContext("2d");
+
+        pCtx.strokeStyle = "rgba(255, 255, 255, 0.24)";
+        pCtx.lineWidth = 2.2;
+        for (let i = -96; i < 192; i += 6) {
+          pCtx.beginPath();
+          pCtx.moveTo(i, 0);
+          pCtx.lineTo(i + 96, 96);
+          pCtx.stroke();
+        }
+
+        pCtx.fillStyle = "rgba(44, 39, 36, 0.045)";
+        for (let i = 0; i < 160; i++) {
+          pCtx.fillRect((i * 37) % 96, (i * 53) % 96, 2, 2);
+        }
+        return ctx.createPattern(pCanvas, "repeat");
+      }
+      crayonPattern = createCrayonPattern();
+
+      const cutoutCanvas = document.createElement("canvas");
+      const cutoutCtx = cutoutCanvas.getContext("2d");
+      const whiteMaskCanvas = document.createElement("canvas");
+      const whiteMaskCtx = whiteMaskCanvas.getContext("2d");
+      const shadowMaskCanvas = document.createElement("canvas");
+      const shadowMaskCtx = shadowMaskCanvas.getContext("2d");
+
+      // Globala papperskant- och skugginställningar (styrs via dev-panelen).
+      // "playerEdge" används inte av canvas-ritningen (spelaren renderas med
+      // DOM/SVG-filtret puppetPaperCutout) — värdet spegas bara dit vid ändring.
+      const PAPER = {
+        playerEdge: 10,
+        objectsEdge: 4.5,
+        shadowOpacity: 0.5,
+        softShadowOpacity: 0.06,
+        shadowOffsetX: -3,
+        shadowOffsetY: 0,
+        softShadowOffsetX: 0.5,
+        softShadowOffsetY: 3.5,
+      };
+
+      /**
+       * Ritar en figur som ett äkta, ojämnt saxklippt pappersurklipp med kritvit ram & autentisk pappersskugga
+       */
+      function drawWithPaperCutout(drawFn, boundsW = 220, boundsH = 220, originX = 110, originY = 110) {
+        const w = Math.max(240, boundsW);
+        const h = Math.max(240, boundsH);
+        if (cutoutCanvas.width !== w || cutoutCanvas.height !== h) {
+          cutoutCanvas.width = w;
+          cutoutCanvas.height = h;
+          whiteMaskCanvas.width = w;
+          whiteMaskCanvas.height = h;
+          shadowMaskCanvas.width = w;
+          shadowMaskCanvas.height = h;
+        }
+
+        cutoutCtx.clearRect(0, 0, w, h);
+        cutoutCtx.save();
+        cutoutCtx.translate(originX, originY);
+        drawFn(cutoutCtx);
+        cutoutCtx.restore();
+        // Bygg en solid kritvit saxklippt papperssilhuett med mjuk, lätt ojämn saxkant
+        whiteMaskCtx.clearRect(0, 0, w, h);
+        whiteMaskCtx.globalCompositeOperation = "source-over";
+        const radius = PAPER.objectsEdge;
+        const steps = 32;
+        for (let i = 0; i < steps; i++) {
+          const a = (i / steps) * Math.PI * 2;
+          const snippedR = radius + Math.sin(a * 3) * 1.1 + Math.cos(a * 5) * 0.6;
+          whiteMaskCtx.drawImage(cutoutCanvas, Math.cos(a) * snippedR, Math.sin(a) * snippedR);
+        }
+        whiteMaskCtx.globalCompositeOperation = "source-in";
+        whiteMaskCtx.fillStyle = "#ffffff";
+        whiteMaskCtx.fillRect(0, 0, w, h);
+        whiteMaskCtx.globalCompositeOperation = "source-over";
+
+        // Bygg en mjuk varm-grå pappersskugga från papperssilhuetten
+        shadowMaskCtx.clearRect(0, 0, w, h);
+        shadowMaskCtx.drawImage(whiteMaskCanvas, 0, 0);
+        shadowMaskCtx.globalCompositeOperation = "source-in";
+        shadowMaskCtx.fillStyle = "#3b332e";
+        shadowMaskCtx.fillRect(0, 0, w, h);
+        shadowMaskCtx.globalCompositeOperation = "source-over";
+
+        // 1. Autentisk flerskiktad pappersskugga (mjuk spridd skugga + skarpare kontaktskugga)
+        ctx.save();
+        ctx.globalAlpha = PAPER.softShadowOpacity;
+        for (let s = 0; s < 6; s++) {
+          const sa = (s / 6) * Math.PI * 2;
+          ctx.drawImage(
+            shadowMaskCanvas,
+            -originX + PAPER.softShadowOffsetX + Math.cos(sa) * 3.5,
+            -originY + PAPER.softShadowOffsetY + Math.sin(sa) * 3.5,
+          );
+        }
+        ctx.globalAlpha = PAPER.shadowOpacity;
+        ctx.drawImage(shadowMaskCanvas, -originX + PAPER.shadowOffsetX, -originY + PAPER.shadowOffsetY);
+        ctx.restore();
+
+        // 2. Subtil mörk papperskant + ogenomskinlig kritvit urklippskant
+        ctx.save();
+        ctx.globalAlpha = 0.22;
+        ctx.drawImage(shadowMaskCanvas, -originX - 0.8, -originY - 0.8);
+        ctx.drawImage(shadowMaskCanvas, -originX + 1.2, -originY + 1.2);
+        ctx.restore();
+        ctx.drawImage(whiteMaskCanvas, -originX, -originY);
+
+        // 3. Själva figuren ovanpå pappersurklippet
+        ctx.drawImage(cutoutCanvas, -originX, -originY);
+      }
+
+      function drawHandLine(c, x1, y1, x2, y2, width = 3, color = "#2c2724") {
+        c.save();
+        c.strokeStyle = color;
+        c.lineWidth = width;
+        c.lineCap = "round";
+        c.beginPath();
+        c.moveTo(x1, y1);
+        const mx = (x1 + x2) * 0.5 + Math.sin(x1 + y1) * 1.5;
+        const my = (y1 + y2) * 0.5 + Math.cos(x2 + y2) * 1.5;
+        c.quadraticCurveTo(mx, my, x2, y2);
+        c.stroke();
+        c.restore();
+      }
+
+      function fillRoundRect(c, x, y, w, h, r) {
+        const rad = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+        c.beginPath();
+        c.moveTo(x + rad, y);
+        c.lineTo(x + w - rad, y);
+        c.quadraticCurveTo(x + w, y, x + w, y + rad);
+        c.lineTo(x + w, y + h - rad);
+        c.quadraticCurveTo(x + w, y + h, x + w - rad, y + h);
+        c.lineTo(x + rad, y + h);
+        c.quadraticCurveTo(x, y + h, x, y + h - rad);
+        c.lineTo(x, y + rad);
+        c.quadraticCurveTo(x, y, x + rad, y);
+        c.closePath();
+      }
+
+      function drawBrassFastener(c, x, y, r = 4.2) {
+        c.save();
+        c.fillStyle = "#f4a261";
+        c.strokeStyle = "#2c2724";
+        c.lineWidth = 2;
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+        c.stroke();
+
+        c.fillStyle = "#fff3b0";
+        c.beginPath();
+        c.arc(x - 1, y - 1, r * 0.38, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
 
       /**
        * =========================================================================
@@ -2739,6 +3442,210 @@
        * 6. SPRATTELGUBBEN MED LEDADE ARMAR & BEN FÖR ALLA RÖRELSESÄTT
        * =========================================================================
        */
+      /**
+       * =========================================================================
+       * SVG-RIGGADE SPELKARAKTÄRER (inline SVG + CSS-animationer)
+       * =========================================================================
+       * Riggade .svg-filer från extern studio droppas in i svg-players/.
+       * Vi hämtar filen, injicerar den inline i <div class="puppet-wrapper">
+       * och låter studions CSS (längst ned i <style>) sköta alla rotationer
+       * via klass-byten (anim-idle / anim-run / anim-jump / anim-swim +
+       * facing-left). Ingen JS rör de animerade grupperna.
+       */
+      // Kända karaktärer med etikett + emoji. Okända filer i svg-players/
+      // får ett automatiskt namn (filnamnet med stor första bokstav) och
+      // en standard-emoji — editera här för att ge dem riktiga namn.
+      const CHARACTER_META = {
+        royal: { label: "Prins / Prinsessa", emoji: "👑" },
+        knight: { label: "Riddaren", emoji: "🛡️" },
+        wizard: { label: "Trollkarlen", emoji: "🧙" },
+        fairy: { label: "Älvan", emoji: "🧚" },
+        dragon: { label: "Draken", emoji: "🐲" },
+      };
+      const FALLBACK_CHARACTERS = Object.keys(CHARACTER_META);
+
+      function puppetSrcFor(characterKey) {
+        return characterKey ? `svg-players/${characterKey}.svg` : null;
+      }
+
+      function characterLabel(key) {
+        if (CHARACTER_META[key]) return CHARACTER_META[key].label;
+        return key.charAt(0).toUpperCase() + key.slice(1).replace(/[-_]/g, " ");
+      }
+      function characterEmoji(key) {
+        return CHARACTER_META[key] ? CHARACTER_META[key].emoji : "🎭";
+      }
+
+      // Python http.server returnerar en HTML-lista med <a href="X.svg">-länkar
+      // när man hämtar en katalog. Vi parsar den för att lista alla tillgängliga
+      // figurer. Faller tillbaka till FALLBACK_CHARACTERS om listningen misslyckas
+      // (t.ex. om spelet serveras från en server som inte har directory listing).
+      async function discoverCharacters() {
+        try {
+          const res = await fetch("svg-players/");
+          if (!res.ok) throw new Error("fetch " + res.status);
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const anchors = doc.querySelectorAll("a[href]");
+          const keys = [];
+          anchors.forEach((a) => {
+            const href = a.getAttribute("href") || "";
+            if (!href.toLowerCase().endsWith(".svg")) return;
+            const filename = href.split("/").pop();
+            const key = filename.replace(/\.svg$/i, "");
+            if (key && !keys.includes(key)) keys.push(key);
+          });
+          return keys;
+        } catch (err) {
+          console.warn("Kunde inte lista svg-players/:", err);
+          return null;
+        }
+      }
+
+      function renderCharPicker(keys) {
+        const picker = document.getElementById("charPicker");
+        if (!picker) return;
+        picker.innerHTML = "";
+        keys.forEach((key) => {
+          const btn = document.createElement("button");
+          btn.className = "crayon-btn choice-chip char-chip" + (key === state.character ? " active" : "");
+          btn.dataset.char = key;
+          btn.title = characterLabel(key);
+          // Rendera figuren själv som miniatyr — ingen emoji behövs.
+          const img = document.createElement("img");
+          img.src = puppetSrcFor(key);
+          img.alt = characterLabel(key);
+          img.className = "char-thumb";
+          img.onerror = () => {
+            // Fallback till emoji om SVG saknas
+            btn.textContent = characterEmoji(key);
+          };
+          btn.appendChild(img);
+          btn.addEventListener("click", () => {
+            picker.querySelectorAll(".choice-chip").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            state.character = key;
+            loadPuppet(key);
+            sound.playPop();
+          });
+          picker.appendChild(btn);
+        });
+        // Om nuvarande state.character inte finns i listan: välj första tillgängliga
+        if (!keys.includes(state.character)) {
+          state.character = keys[0] || "royal";
+          const first = picker.querySelector(".choice-chip");
+          if (first) first.classList.add("active");
+          loadPuppet(state.character);
+        }
+      }
+
+      async function initCharacterPicker() {
+        // Visa fallback-listan direkt så startskärmen inte är tom under tiden.
+        renderCharPicker(FALLBACK_CHARACTERS);
+        const discovered = await discoverCharacters();
+        if (!discovered || discovered.length === 0) return;
+        // Sortera: kända figurer i deras definitionsordning, nya alfabetiskt sist.
+        const known = FALLBACK_CHARACTERS.filter((k) => discovered.includes(k));
+        const unknown = discovered.filter((k) => !FALLBACK_CHARACTERS.includes(k)).sort();
+        const ordered = [...known, ...unknown];
+        // Omrita bara om listan faktiskt ändrats (undviker att nollställa aktivt val).
+        const current = Array.from(document.querySelectorAll("#charPicker .choice-chip")).map(
+          (b) => b.dataset.char,
+        );
+        if (current.join(",") !== ordered.join(",")) renderCharPicker(ordered);
+      }
+
+      // SVG:n är 320×320 med fötter på y≈282. Vi placerar wrapperns (160, 282)
+      // vid spelarens (player.x, player.y) och skalar ner så att figuren blir
+      // ~95 skärmpixlar hög (matchar spelets gamla procedurella storlek).
+      const PUPPET_SCALE = 0.42;
+      const PUPPET_FEET_X = 160;
+      const PUPPET_FEET_Y = 282;
+
+      const PUPPET = {
+        ready: false,
+        currentSrc: null,
+        wrapper: null,
+        animClass: null,
+        facingLeft: false,
+        scale: 0.55, // speglas från dev-sliderns playerScale i applyDevSettings
+      };
+
+
+      async function loadPuppet(characterKey) {
+        if (!PUPPET.wrapper) PUPPET.wrapper = document.querySelector(".puppet-wrapper");
+        const src = puppetSrcFor(characterKey);
+        if (!src || !PUPPET.wrapper) {
+          PUPPET.ready = false;
+          if (PUPPET.wrapper) PUPPET.wrapper.innerHTML = "";
+          return;
+        }
+        if (PUPPET.currentSrc === src && PUPPET.ready) return;
+        PUPPET.ready = false;
+        PUPPET.currentSrc = src;
+        try {
+          const res = await fetch(src);
+          if (!res.ok) throw new Error("fetch " + res.status);
+          const text = await res.text();
+          if (PUPPET.currentSrc !== src) return; // nyare laddning hann starta
+          // Ta bort ev. XML-/DOCTYPE-prolog så det kan injiceras som HTML.
+          const clean = text
+            .replace(/<\?xml[^?]*\?>/i, "")
+            .replace(/<!DOCTYPE[^>]*>/i, "")
+            .trim();
+          PUPPET.wrapper.innerHTML = clean;
+          PUPPET.ready = true;
+          PUPPET.animClass = null; // tvinga ny klassificering nästa updatePuppet
+        } catch (err) {
+          console.warn("Kunde inte ladda puppet-SVG", src, err);
+          PUPPET.ready = false;
+          if (PUPPET.wrapper) PUPPET.wrapper.innerHTML = "";
+        }
+      }
+
+      function puppetAnimStateFor(player) {
+        if (state.mode !== "PLAYING") return "anim-idle";
+        // Bananskal: sittande fas har högst prioritet (spelaren står på marken
+        // men är "låst" i sitt-pose), därefter luftvolt bakåt under flip-fasen.
+        if (player.slipTimer > 0 && player.slipPhase === "sit") return "anim-sit";
+        if (player.slipTimer > 0 && player.slipPhase === "flip") return "anim-backflip";
+        // Volt vid dubbelhopp (framåt-snurr i luften).
+        if (player.spinAngle !== 0 && player.spinDir === 1 && !player.isGrounded) return "anim-flip";
+        if (state.inLake) return "anim-swim";
+        if (player.flyTimer > 0) return "anim-jump";
+        if (!player.isGrounded) return "anim-jump";
+        if (player.isChargingJump) return "anim-idle";
+        return "anim-run";
+      }
+
+      function updatePuppet(player) {
+        const w = PUPPET.wrapper;
+        if (!w) return;
+        if (!PUPPET.ready) {
+          w.style.visibility = "hidden";
+          return;
+        }
+        w.style.visibility = "";
+        const desiredAnim = puppetAnimStateFor(player);
+        // Simning: #character-side roterar 76° kring (165, 175) vilket ger
+        // figurens tyngdpunkt ~120 viewBox-enheter ovanför fot-ankaret. Vi
+        // skjuter wrappern nedåt proportionellt mot skalan så att huvudet
+        // precis rör vattenytan istället för att sväva ovanför den.
+        const swimDrop = desiredAnim === "anim-swim" ? 120 * PUPPET.scale : 0;
+        w.style.left = player.x - PUPPET_FEET_X + "px";
+        w.style.top = player.y - PUPPET_FEET_Y + swimDrop + "px";
+        if (desiredAnim !== PUPPET.animClass) {
+          if (PUPPET.animClass) w.classList.remove(PUPPET.animClass);
+          w.classList.add(desiredAnim);
+          PUPPET.animClass = desiredAnim;
+        }
+        // Spelet scrollar höger → figuren tittar alltid höger just nu.
+        const faceLeft = false;
+        if (faceLeft !== PUPPET.facingLeft) {
+          w.classList.toggle("facing-left", faceLeft);
+          PUPPET.facingLeft = faceLeft;
+        }
+      }
 
       function drawSprattelgubbe(player) {
         ctx.save();
